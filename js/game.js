@@ -5,8 +5,11 @@ var SETTINGS = {
     x : 100,
     y : 200
   },
-  gravity : 0.9
-  
+  gravity : 0.9,
+  run_speed : 2,
+  controls : {
+    right : 700 // right click area
+  }  
 }
 
 
@@ -35,7 +38,7 @@ bunny.vy = 0;
 // move the sprite to starting point
 bunny.position.x = SETTINGS.starting_point.x;
 bunny.position.y = SETTINGS.starting_point.y;
-bunny.new_position = { x:0, y:0 };
+bunny.new_position = bunny.position;
 
 stage.addChild(bunny);
 
@@ -59,10 +62,27 @@ p1.endFill();
 stage.addChild( p1 );
 
 
+// interaction
+stage.click = stage.touchstart = function (event) {
+  // console.log('event',event);
+  
+  if( event.originalEvent.clientX > SETTINGS.controls.right ){
+    bunny.running = true;
+    console.log('bunny.running',bunny.running);
+  }
+};
+
+
 // game loop
 function animate() {
 
     requestAnimFrame( animate );
+
+    // movement
+    if( bunny.running ){
+      // move the stage, not the bunny
+      p1.position.x -= SETTINGS.run_speed;
+    }
 
     // add gravity
     bunny.vy += SETTINGS.gravity;
@@ -71,7 +91,7 @@ function animate() {
     bunny.new_position.y += bunny.vy;
 
     // land on platforms
-    console.log('bunny.checkCollision(p1)',bunny.checkCollision(p1));
+    // console.log('bunny.checkCollision(p1)',bunny.checkCollision(p1));
     if( !bunny.checkCollision(p1) ){
       // apply gravity
       bunny.position.y = bunny.new_position.y;
@@ -79,6 +99,8 @@ function animate() {
       if( bunny.vy > 0 ){ // applying gravity
         bunny.position.y = p1.y;
       }
+      bunny.new_position = bunny.position;
+      bunny.vy = 0;
     }
   
     // render the stage   
