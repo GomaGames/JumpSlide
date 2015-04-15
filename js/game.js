@@ -14,6 +14,12 @@ var SETTINGS = {
   },
   jump_velocity : 15
 }
+var GAME_STATES = {
+  start : "start",
+  playing : "playing",
+  end : "end"
+};
+var GAME_STATE = GAME_STATES.start;
 
 var platforms = [];
 
@@ -69,13 +75,23 @@ addPlatform(1970, 600, 200, 40);
 
 // interaction
 stage.click = stage.touchstart = function (event) {
-  // console.log('event',event);
   
-  if( event.originalEvent.clientY < SETTINGS.controls.up ){
-    bunny.jump();
-  }else
-  if( event.originalEvent.clientX > SETTINGS.controls.right ){
+  if( GAME_STATE == GAME_STATES.playing ){
+
+    if( event.originalEvent.clientY < SETTINGS.controls.up ){
+      bunny.jump();
+    }
+
+  }else if( GAME_STATE == GAME_STATES.start ){
+
     bunny.running = true;
+    GAME_STATE = GAME_STATES.playing;
+
+  }else if( GAME_STATE == GAME_STATES.end ){
+
+    // restart game
+    location.reload();
+
   }
 };
 
@@ -85,39 +101,45 @@ function animate() {
 
     requestAnimFrame( animate );
 
-    bunny.stageX += SETTINGS.run_speed
-    if( bunny.stageX >= SETTINGS.win_point ){
+    // add gravity
+    bunny.vy += SETTINGS.gravity;
 
-      alert('win');
+    // apply vertical velocity
+    bunny.position.y += bunny.vy;
 
-    }else
-    if( bunny.position.y >= SETTINGS.ipad_dimensions[1] ){
-      alert('lose');
-    }else{
+    bunny.on_platform = platforms.reduce(function (p,c,i,a) {
+      return p || bunny.check_collision(c);
+    },false);
 
-      // add gravity
-      bunny.vy += SETTINGS.gravity;
+    bunny.free_fall();
 
-      // apply vertical velocity
-      bunny.position.y += bunny.vy;
+    platforms.forEach(function (platform) {
+      // movement
+      if( bunny.running ){
+        // move the stage, not the bunny
+        platform.position.x -= SETTINGS.run_speed;
+      }
 
-      bunny.on_platform = platforms.reduce(function (p,c,i,a) {
-        return p || bunny.check_collision(c);
-      },false);
+    });
 
-      bunny.free_fall();
-
-      platforms.forEach(function (platform) {
-        // movement
-        if( bunny.running ){
-          // move the stage, not the bunny
-          platform.position.x -= SETTINGS.run_speed;
-        }
-
-      });
+    if( GAME_STATE == GAME_STATES.playing ){
       
-    }
+      if( bunny.stageX >= SETTINGS.win_point ){
 
+        game_win();
+
+      }else
+      if( bunny.position.y >= SETTINGS.ipad_dimensions[1] ){
+        
+        game_lose();
+
+      }else{
+
+        bunny.stageX += SETTINGS.run_speed;
+        
+      }
+
+    } // end GAME_SATES.playing
   
     // render the stage   
     renderer.render(stage);
@@ -144,6 +166,37 @@ function addPlatform ( x, y, width, height ) {
 
   platforms.push(platform);
   
+}
+
+function game_win () {
+  bunny.running = false;
+  GAME_STATE = GAME_STATES.end;
+
+  var texture = PIXI.Texture.fromImage("assets/WIN_GAME.png");
+  var winsprite = new PIXI.Sprite(texture);
+
+  // move the sprite's anchor point to feet
+  winsprite.anchor.x = 0.5;
+  winsprite.anchor.y = 0.5;
+  winsprite.position.x = SETTINGS.ipad_dimensions[0]/2;
+  winsprite.position.y = SETTINGS.ipad_dimensions[1]/2;
+
+  stage.addChild( winsprite );
+}
+function game_lose () {
+  bunny.running = false;
+  GAME_STATE = GAME_STATES.end;
+
+  var texture = PIXI.Texture.fromImage("assets/END_GAME.png");
+  var losesprite = new PIXI.Sprite(texture);
+
+  // move the sprite's anchor point to feet
+  losesprite.anchor.x = 0.5;
+  losesprite.anchor.y = 0.5;
+  losesprite.position.x = SETTINGS.ipad_dimensions[0]/2;
+  losesprite.position.y = SETTINGS.ipad_dimensions[1]/2;
+
+  stage.addChild( losesprite );
 }
 
 PIXI.Sprite.prototype.check_collision = function (displayObject) {
@@ -183,7 +236,6 @@ PIXI.Sprite.prototype.collide_with_platform = function (platform) {
 }
 
 PIXI.Sprite.prototype.jump = function () {
-  console.log('this.on_platform',this.on_platform);
   if(this.on_platform){
     this.vy = -SETTINGS.jump_velocity;
     this.is_jumping = true;
