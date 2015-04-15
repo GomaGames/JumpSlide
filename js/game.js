@@ -5,13 +5,14 @@ var SETTINGS = {
     x : 100,
     y : 200
   },
+  win_point : 2000,
   gravity : 0.9,
   run_speed : 2,
   controls : {
     up : 300, // click area, top
     right : 700 // click area, right
   },
-  jump_velocity : -15
+  jump_velocity : 15
 }
 
 var platforms = [];
@@ -37,6 +38,7 @@ bunny.anchor.x = 0.5;
 bunny.anchor.y = 1.0;
 // bunny.anchor.y = 1;
 bunny.vy = 0;
+bunny.stageX = 0;
 
 // move the sprite to starting point
 bunny.position.x = SETTINGS.starting_point.x;
@@ -57,6 +59,11 @@ addPlatform(320, 470, 200, 20);
 addPlatform(540, 450, 200, 30);
 addPlatform(740, 500, 200, 10);
 addPlatform(970, 600, 200, 40);
+addPlatform(1090, 500, 200, 10);
+addPlatform(1320, 470, 200, 20);
+addPlatform(1540, 450, 200, 30);
+addPlatform(1740, 500, 200, 10);
+addPlatform(1970, 600, 200, 40);
 
 
 
@@ -78,26 +85,39 @@ function animate() {
 
     requestAnimFrame( animate );
 
-    // add gravity
-    bunny.vy += SETTINGS.gravity;
+    bunny.stageX += SETTINGS.run_speed
+    if( bunny.stageX >= SETTINGS.win_point ){
 
-    // apply vertical velocity
-    bunny.position.y += bunny.vy;
+      alert('win');
 
-    bunny.on_platform = platforms.reduce(function (p,c,i,a) {
-      return p || bunny.check_collision(c);
-    },false);
+    }else
+    if( bunny.position.y >= SETTINGS.ipad_dimensions[1] ){
+      alert('lose');
+    }else{
 
-    bunny.free_fall();
+      // add gravity
+      bunny.vy += SETTINGS.gravity;
 
-    platforms.forEach(function (platform) {
-      // movement
-      if( bunny.running ){
-        // move the stage, not the bunny
-        platform.position.x -= SETTINGS.run_speed;
-      }
+      // apply vertical velocity
+      bunny.position.y += bunny.vy;
 
-    });
+      bunny.on_platform = platforms.reduce(function (p,c,i,a) {
+        return p || bunny.check_collision(c);
+      },false);
+
+      bunny.free_fall();
+
+      platforms.forEach(function (platform) {
+        // movement
+        if( bunny.running ){
+          // move the stage, not the bunny
+          platform.position.x -= SETTINGS.run_speed;
+        }
+
+      });
+      
+    }
+
   
     // render the stage   
     renderer.render(stage);
