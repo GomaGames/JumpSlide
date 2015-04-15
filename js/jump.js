@@ -7,9 +7,9 @@ JUMPJS.SETTINGS = {
     x : 100,
     y : 200
   },
-  win_point : 2000,
+  win_point : 4000,
   gravity : 0.9,
-  run_speed : 2,
+  run_speed : 5,
   controls : {
     up : 300, // click area, top
     right : 700 // click area, right
@@ -75,10 +75,17 @@ JUMPJS.init = function() {
 
   // interaction
   JUMPJS.stage.click = JUMPJS.stage.touchstart = function (event) {
+    var touched = {};
+    if( event.originalEvent.toString() == "[object TouchEvent]" ){
+      touched = event.global;
+    }else{
+      touched.x = event.originalEvent.clientX;
+      touched.y = event.originalEvent.clientY;
+    }
     
     if( GAME_STATE == GAME_STATES.playing ){
 
-      if( event.originalEvent.clientY < JUMPJS.SETTINGS.controls.up ){
+      if( touched.y < JUMPJS.SETTINGS.controls.up ){
         bunny.jump();
       }
 
