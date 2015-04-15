@@ -36,6 +36,8 @@ JUMPJS.init = function() {
 
   requestAnimFrame( animate );
 
+  // character
+  
   // create a texture from an image path
   var texture = PIXI.Texture.fromImage("assets/bunny.png");
   // create a new Sprite using the texture
@@ -58,6 +60,19 @@ JUMPJS.init = function() {
 
   JUMPJS.stage.addChild(bunny);
 
+
+
+  // start screen
+  var start_texture = PIXI.Texture.fromImage("assets/START_GAME.png");
+  var startsprite = new PIXI.Sprite(start_texture);
+
+  // move the sprite's anchor point to feet
+  startsprite.anchor.x = 0.5;
+  startsprite.anchor.y = 0.5;
+  startsprite.position.x = JUMPJS.SETTINGS.ipad_dimensions[0]/2;
+  startsprite.position.y = JUMPJS.SETTINGS.ipad_dimensions[1]/2;
+  JUMPJS.stage.addChild(startsprite);
+
   // interaction
   JUMPJS.stage.click = JUMPJS.stage.touchstart = function (event) {
     
@@ -71,6 +86,7 @@ JUMPJS.init = function() {
 
       bunny.running = true;
       GAME_STATE = GAME_STATES.playing;
+      JUMPJS.stage.removeChild(startsprite);
 
     }else if( GAME_STATE == GAME_STATES.end ){
 
