@@ -14,7 +14,7 @@ var SETTINGS = {
   jump_velocity : -15
 }
 
-
+var platforms = [];
 
 // create an new instance of a pixi stage
 var stage = new PIXI.Stage(SETTINGS.background_color);
@@ -51,21 +51,13 @@ stage.addChild(bunny);
 
 
 // platforms
-var p1 = new PIXI.Graphics();
-p1.position.x = 90;
-p1.position.y = 500;
 
-p1.beginFill(0xFFFF00);
+addPlatform(90, 500, 200, 10);
+addPlatform(320, 470, 200, 20);
+addPlatform(540, 450, 200, 30);
+addPlatform(740, 500, 200, 10);
+addPlatform(970, 600, 200, 40);
 
-// set the line style to have a width of 5 and set the color to red
-p1.lineStyle(1, 0xFF0000);
-
-// draw a rectangle
-p1.drawRect( 0, 0, 200, 10 );
-
-p1.endFill();
-
-stage.addChild( p1 );
 
 
 // interaction
@@ -86,41 +78,55 @@ function animate() {
 
     requestAnimFrame( animate );
 
-    // movement
-    if( bunny.running ){
-      // move the stage, not the bunny
-      p1.position.x -= SETTINGS.run_speed;
-    }
-
-
     // add gravity
     bunny.vy += SETTINGS.gravity;
 
     // apply vertical velocity
     bunny.position.y += bunny.vy;
 
-    
-    // free fall
-    if( bunny.is_jumping || !bunny.checkCollision(p1) ){
+    bunny.on_platform = platforms.reduce(function (p,c,i,a) {
+      return p || bunny.check_collision(c);
+    },false);
 
-      bunny.on_platform = false;
-      bunny.is_jumping = false;
+    bunny.free_fall();
 
-    // colliding with platform
-    }else{
+    platforms.forEach(function (platform) {
+      // movement
+      if( bunny.running ){
+        // move the stage, not the bunny
+        platform.position.x -= SETTINGS.run_speed;
+      }
 
-      bunny.on_platform = true;
-
-      bunny.position.y = p1.y;
-      bunny.vy = 0;
-      
-    }
+    });
   
     // render the stage   
     renderer.render(stage);
 }
 
-PIXI.Sprite.prototype.checkCollision = function (displayObject) {
+
+function addPlatform ( x, y, width, height ) {
+
+  var platform = new PIXI.Graphics();
+  platform.position.x = x;
+  platform.position.y = y;
+
+  platform.beginFill(0xFFFF00);
+
+  // set the line style to have a width of 5 and set the color to red
+  platform.lineStyle(1, 0xFF0000);
+
+  // draw a rectangle
+  platform.drawRect( 0, 0, width, height );
+
+  platform.endFill();
+
+  stage.addChild( platform );
+
+  platforms.push(platform);
+  
+}
+
+PIXI.Sprite.prototype.check_collision = function (displayObject) {
   var myBox = this.getLocalBounds();
   myBox.x = this.position.x;
   myBox.y = this.position.y;
@@ -129,15 +135,35 @@ PIXI.Sprite.prototype.checkCollision = function (displayObject) {
   otherBox.y = displayObject.position.y;
 
   // console.log(myBox, otherBox);
-  return !(otherBox.x > (myBox.x + myBox.width/2)  || 
+  var colliding = !(otherBox.x > (myBox.x + myBox.width/2)  || 
            (otherBox.x + otherBox.width ) < myBox.x || 
            otherBox.y > (myBox.y + myBox.height/2) ||
            (otherBox.y + otherBox.height) < myBox.y);
+
+  if( colliding ) this.collide_with_platform( displayObject );
+
+  return colliding;
 };
 
 
-PIXI.Sprite.prototype.jump = function () {
+PIXI.Sprite.prototype.free_fall = function () {
   
+  this.is_jumping = false;
+
+}
+
+PIXI.Sprite.prototype.collide_with_platform = function (platform) {
+  
+  if( !this.is_jumping ){
+
+    this.position.y = platform.y;
+    this.vy = 0;
+  }
+
+}
+
+PIXI.Sprite.prototype.jump = function () {
+  console.log('this.on_platform',this.on_platform);
   if(this.on_platform){
     this.vy = SETTINGS.jump_velocity;
     this.is_jumping = true;
