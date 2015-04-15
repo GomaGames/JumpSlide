@@ -185,7 +185,7 @@ PIXI.Sprite.prototype.collide_with_platform = function (platform) {
 PIXI.Sprite.prototype.jump = function () {
   console.log('this.on_platform',this.on_platform);
   if(this.on_platform){
-    this.vy = SETTINGS.jump_velocity;
+    this.vy = -SETTINGS.jump_velocity;
     this.is_jumping = true;
   }
 }
