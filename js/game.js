@@ -8,8 +8,10 @@ var SETTINGS = {
   gravity : 0.9,
   run_speed : 2,
   controls : {
-    right : 700 // right click area
-  }  
+    up : 300, // click area, top
+    right : 700 // click area, right
+  },
+  jump_velocity : -15
 }
 
 
@@ -32,13 +34,17 @@ var bunny = new PIXI.Sprite(texture);
 
 // move the sprite's anchor point to feet
 bunny.anchor.x = 0.5;
-bunny.anchor.y = 1;
+bunny.anchor.y = 1.0;
+// bunny.anchor.y = 1;
 bunny.vy = 0;
 
 // move the sprite to starting point
 bunny.position.x = SETTINGS.starting_point.x;
 bunny.position.y = SETTINGS.starting_point.y;
 bunny.new_position = bunny.position;
+
+bunny.on_platform = false;
+bunny.is_jumping = false;
 
 stage.addChild(bunny);
 
@@ -66,9 +72,11 @@ stage.addChild( p1 );
 stage.click = stage.touchstart = function (event) {
   // console.log('event',event);
   
+  if( event.originalEvent.clientY < SETTINGS.controls.up ){
+    bunny.jump();
+  }else
   if( event.originalEvent.clientX > SETTINGS.controls.right ){
     bunny.running = true;
-    console.log('bunny.running',bunny.running);
   }
 };
 
@@ -84,32 +92,35 @@ function animate() {
       p1.position.x -= SETTINGS.run_speed;
     }
 
+
     // add gravity
     bunny.vy += SETTINGS.gravity;
 
-    // calculate gravity
-    bunny.new_position.y += bunny.vy;
+    // apply vertical velocity
+    bunny.position.y += bunny.vy;
 
-    // land on platforms
-    // console.log('bunny.checkCollision(p1)',bunny.checkCollision(p1));
-    if( !bunny.checkCollision(p1) ){
-      // apply gravity
-      bunny.position.y = bunny.new_position.y;
+    
+    // free fall
+    if( bunny.is_jumping || !bunny.checkCollision(p1) ){
+
+      bunny.on_platform = false;
+      bunny.is_jumping = false;
+
+    // colliding with platform
     }else{
-      if( bunny.vy > 0 ){ // applying gravity
-        bunny.position.y = p1.y;
-      }
-      bunny.new_position = bunny.position;
+
+      bunny.on_platform = true;
+
+      bunny.position.y = p1.y;
       bunny.vy = 0;
+      
     }
   
     // render the stage   
     renderer.render(stage);
 }
 
-PIXI.Sprite.prototype.checkCollision = checkCollision;
-
-function checkCollision(displayObject) {
+PIXI.Sprite.prototype.checkCollision = function (displayObject) {
   var myBox = this.getLocalBounds();
   myBox.x = this.position.x;
   myBox.y = this.position.y;
@@ -118,8 +129,17 @@ function checkCollision(displayObject) {
   otherBox.y = displayObject.position.y;
 
   // console.log(myBox, otherBox);
-  return !(otherBox.x > (myBox.x + myBox.width)  || 
+  return !(otherBox.x > (myBox.x + myBox.width/2)  || 
            (otherBox.x + otherBox.width ) < myBox.x || 
-           otherBox.y > (myBox.y + myBox.height) ||
+           otherBox.y > (myBox.y + myBox.height/2) ||
            (otherBox.y + otherBox.height) < myBox.y);
 };
+
+
+PIXI.Sprite.prototype.jump = function () {
+  
+  if(this.on_platform){
+    this.vy = SETTINGS.jump_velocity;
+    this.is_jumping = true;
+  }
+}
