@@ -20,8 +20,11 @@ python -m SimpleHTTPServer
 
 ### User Interaction
 
+touch points and click
+
 ### The Game Loop
 
 ### Continuing Game Dev
 
 other frameworks and resources
+opengameart.com

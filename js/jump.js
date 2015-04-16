@@ -1,6 +1,15 @@
+/**
+ * Expose Public API
+ *
+ * Tightly coupled public hooks from and to GAME object
+ *
+ * GAME object calls JumpSlide.start()
+ * 
+ */
+
+JumpSlide = {};
 // default settings
-JUMPJS = {};
-JUMPJS.SETTINGS = {
+JumpSlide.SETTINGS = {
   background_color : 0x66FF99,
   ipad_dimensions : [1024, 768],
   starting_point : {
@@ -16,11 +25,16 @@ JUMPJS.SETTINGS = {
   },
   jump_velocity : 15
 }
-JUMPJS.stage = new PIXI.Stage(JUMPJS.SETTINGS.background_color);
-JUMPJS.player = null;
-JUMPJS.platforms = [];
-JUMPJS.init = function() {
-  
+JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
+JumpSlide.player = null;
+JumpSlide.platforms = [];
+
+
+/**
+ * Private Engine IIFE
+ */
+(function () {
+
   var GAME_STATES = {
     start : "start",
     playing : "playing",
@@ -29,36 +43,38 @@ JUMPJS.init = function() {
   var GAME_STATE = GAME_STATES.start;
 
   // create a renderer instance
-  var renderer = PIXI.autoDetectRenderer.apply(this, JUMPJS.SETTINGS.ipad_dimensions);
+  var renderer = PIXI.autoDetectRenderer.apply(this, JumpSlide.SETTINGS.ipad_dimensions);
 
   // add the renderer view element to the DOM
   document.body.appendChild(renderer.view);
 
-  requestAnimFrame( animate );
+  JumpSlide.start = function(){
+    requestAnimFrame( animate );
+  }
 
   // character
   
   // create a texture from an image path
   var texture = PIXI.Texture.fromImage("assets/bunny.png");
   // create a new Sprite using the texture
-  var bunny = new PIXI.Sprite(texture);
+  JumpSlide.player = new PIXI.Sprite(texture);
 
   // move the sprite's anchor point to feet
-  bunny.anchor.x = 0.5;
-  bunny.anchor.y = 1.0;
-  // bunny.anchor.y = 1;
-  bunny.vy = 0;
-  bunny.stageX = 0;
+  JumpSlide.player.anchor.x = 0.5;
+  JumpSlide.player.anchor.y = 1.0;
+  // JumpSlide.player.anchor.y = 1;
+  JumpSlide.player.vy = 0;
+  JumpSlide.player.stageX = 0;
 
   // move the sprite to starting point
-  bunny.position.x = JUMPJS.SETTINGS.starting_point.x;
-  bunny.position.y = JUMPJS.SETTINGS.starting_point.y;
-  bunny.new_position = bunny.position;
+  JumpSlide.player.position.x = JumpSlide.SETTINGS.starting_point.x;
+  JumpSlide.player.position.y = JumpSlide.SETTINGS.starting_point.y;
+  JumpSlide.player.new_position = JumpSlide.player.position;
 
-  bunny.on_platform = false;
-  bunny.is_jumping = false;
+  JumpSlide.player.on_platform = false;
+  JumpSlide.player.is_jumping = false;
 
-  JUMPJS.stage.addChild(bunny);
+  JumpSlide.stage.addChild(JumpSlide.player);
 
 
 
@@ -69,12 +85,12 @@ JUMPJS.init = function() {
   // move the sprite's anchor point to feet
   startsprite.anchor.x = 0.5;
   startsprite.anchor.y = 0.5;
-  startsprite.position.x = JUMPJS.SETTINGS.ipad_dimensions[0]/2;
-  startsprite.position.y = JUMPJS.SETTINGS.ipad_dimensions[1]/2;
-  JUMPJS.stage.addChild(startsprite);
+  startsprite.position.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2;
+  startsprite.position.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
+  JumpSlide.stage.addChild(startsprite);
 
   // interaction
-  JUMPJS.stage.click = JUMPJS.stage.touchstart = function (event) {
+  JumpSlide.stage.click = JumpSlide.stage.touchstart = function (event) {
     var touched = {};
     if( event.originalEvent.toString() == "[object TouchEvent]" ){
       touched = event.global;
@@ -82,18 +98,18 @@ JUMPJS.init = function() {
       touched.x = event.originalEvent.clientX;
       touched.y = event.originalEvent.clientY;
     }
-    
+
     if( GAME_STATE == GAME_STATES.playing ){
 
-      if( touched.y < JUMPJS.SETTINGS.controls.up ){
-        bunny.jump();
+      if( touched.y < JumpSlide.SETTINGS.controls.up ){
+        JumpSlide.player.jump();
       }
 
     }else if( GAME_STATE == GAME_STATES.start ){
 
-      bunny.running = true;
+      JumpSlide.player.running = true;
       GAME_STATE = GAME_STATES.playing;
-      JUMPJS.stage.removeChild(startsprite);
+      JumpSlide.stage.removeChild(startsprite);
 
     }else if( GAME_STATE == GAME_STATES.end ){
 
@@ -107,55 +123,56 @@ JUMPJS.init = function() {
   // game loop
   function animate() {
 
-      requestAnimFrame( animate );
+    requestAnimFrame( animate );
 
-      // add gravity
-      bunny.vy += JUMPJS.SETTINGS.gravity;
+    // add gravity
+    JumpSlide.player.vy += JumpSlide.SETTINGS.gravity;
 
-      // apply vertical velocity
-      bunny.position.y += bunny.vy;
+    // apply vertical velocity
+    JumpSlide.player.position.y += JumpSlide.player.vy;
 
-      bunny.on_platform = JUMPJS.platforms.reduce(function (p,c,i,a) {
-        return p || bunny.check_collision(c);
-      },false);
+    JumpSlide.player.on_platform = JumpSlide.platforms.reduce(function (p,c,i,a) {
+      return p || JumpSlide.player.check_collision(c);
+    },false);
 
-      bunny.free_fall();
+    JumpSlide.player.free_fall();
 
-      JUMPJS.platforms.forEach(function (platform) {
-        // movement
-        if( bunny.running ){
-          // move the stage, not the bunny
-          platform.position.x -= JUMPJS.SETTINGS.run_speed;
-        }
+    JumpSlide.platforms.forEach(function (platform) {
+      // movement
+      if( JumpSlide.player.running ){
+        // move the stage, not the JumpSlide.player
+        platform.position.x -= JumpSlide.SETTINGS.run_speed;
+      }
 
-      });
+    });
 
-      if( GAME_STATE == GAME_STATES.playing ){
+    if( GAME_STATE == GAME_STATES.playing ){
+      
+      if( JumpSlide.player.stageX >= JumpSlide.SETTINGS.win_point ){
+
+        game_win();
+
+      }else
+      if( JumpSlide.player.position.y >= JumpSlide.SETTINGS.ipad_dimensions[1] ){
         
-        if( bunny.stageX >= JUMPJS.SETTINGS.win_point ){
+        game_lose();
 
-          game_win();
+      }else{
 
-        }else
-        if( bunny.position.y >= JUMPJS.SETTINGS.ipad_dimensions[1] ){
-          
-          game_lose();
+        JumpSlide.player.stageX += JumpSlide.SETTINGS.run_speed;
+        
+      }
 
-        }else{
+    } // end GAME_SATES.playing
+  
+    // render the stage   
+    renderer.render( JumpSlide.stage );
 
-          bunny.stageX += JUMPJS.SETTINGS.run_speed;
-          
-        }
-
-      } // end GAME_SATES.playing
-    
-      // render the stage   
-      renderer.render( JUMPJS.stage );
+    GAME.loop( JumpSlide );
   }
 
-
-  function game_win () {
-    bunny.running = false;
+  game_win = function() {
+    JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
     var texture = PIXI.Texture.fromImage("assets/WIN_GAME.png");
@@ -164,13 +181,16 @@ JUMPJS.init = function() {
     // move the sprite's anchor point to feet
     winsprite.anchor.x = 0.5;
     winsprite.anchor.y = 0.5;
-    winsprite.position.x = JUMPJS.SETTINGS.ipad_dimensions[0]/2;
-    winsprite.position.y = JUMPJS.SETTINGS.ipad_dimensions[1]/2;
+    winsprite.position.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2;
+    winsprite.position.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
 
-    JUMPJS.stage.addChild( winsprite );
+    JumpSlide.stage.addChild( winsprite );
+
+    GAME.win( JumpSlide );
   }
-  function game_lose () {
-    bunny.running = false;
+
+  game_lose = function() {
+    JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
     var texture = PIXI.Texture.fromImage("assets/END_GAME.png");
@@ -179,17 +199,19 @@ JUMPJS.init = function() {
     // move the sprite's anchor point to feet
     losesprite.anchor.x = 0.5;
     losesprite.anchor.y = 0.5;
-    losesprite.position.x = JUMPJS.SETTINGS.ipad_dimensions[0]/2;
-    losesprite.position.y = JUMPJS.SETTINGS.ipad_dimensions[1]/2;
+    losesprite.position.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2;
+    losesprite.position.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
 
-    JUMPJS.stage.addChild( losesprite );
+    JumpSlide.stage.addChild( losesprite );
+
+    GAME.lose( JumpSlide );
   }
-  
-}
-JUMPJS.init();
+
+})();
 
 
-JUMPJS.addPlatform = function ( x, y, width, height ) {
+
+JumpSlide.addPlatform = function ( x, y, width, height ) {
 
   var platform = new PIXI.Graphics();
   platform.position.x = x;
@@ -205,12 +227,13 @@ JUMPJS.addPlatform = function ( x, y, width, height ) {
 
   platform.endFill();
 
-  JUMPJS.stage.addChild( platform );
+  JumpSlide.stage.addChild( platform );
 
-  JUMPJS.platforms.push(platform);
+  JumpSlide.platforms.push(platform);
   
 }
 
+GAME.init(JumpSlide);
 
 
 PIXI.Sprite.prototype.check_collision = function (displayObject) {
@@ -251,7 +274,7 @@ PIXI.Sprite.prototype.collide_with_platform = function (platform) {
 
 PIXI.Sprite.prototype.jump = function () {
   if(this.on_platform){
-    this.vy = -JUMPJS.SETTINGS.jump_velocity;
+    this.vy = -JumpSlide.SETTINGS.jump_velocity;
     this.is_jumping = true;
   }
 }
