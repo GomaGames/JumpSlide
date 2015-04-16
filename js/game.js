@@ -1,28 +1,46 @@
 GAME = {};
 GAME.init = function (JumpSlide) {
 
-  
-  JumpSlide.addPlatform(90, 500, 200, 10);
-  JumpSlide.addPlatform(320, 470, 200, 20);
-  JumpSlide.addPlatform(540, 450, 200, 30);
-  JumpSlide.addPlatform(740, 500, 200, 10);
-  JumpSlide.addPlatform(970, 600, 200, 40);
-  JumpSlide.addPlatform(1090, 500, 200, 10);
-  JumpSlide.addPlatform(1320, 470, 200, 20);
-  JumpSlide.addPlatform(1540, 450, 200, 30);
-  JumpSlide.addPlatform(1740, 500, 200, 10);
-  JumpSlide.addPlatform(1970, 600, 200, 40);
-  JumpSlide.addPlatform(2090, 500, 200, 10);
-  JumpSlide.addPlatform(2320, 470, 200, 20);
-  JumpSlide.addPlatform(2540, 450, 200, 30);
-  JumpSlide.addPlatform(2740, 500, 200, 10);
-  JumpSlide.addPlatform(2970, 600, 200, 40);
-  JumpSlide.addPlatform(3090, 500, 200, 10);
-  JumpSlide.addPlatform(3320, 470, 200, 20);
-  JumpSlide.addPlatform(3540, 450, 200, 30);
-  JumpSlide.addPlatform(3740, 500, 200, 10);
-  JumpSlide.addPlatform(3970, 600, 200, 40);
-  
+  var platform_height = 45;
+  var platform_width = 200;
+  var floor_height = 68;
+  var floor_position = 700;
+  var coin = 50;
+
+
+  JumpSlide.addPlatform(50, floor_position, 300, floor_height);
+  JumpSlide.addPlatform(480, floor_position, 1000, floor_height);
+
+  /* Upper Route */
+  // JumpSlide.addPlatform(825, 517, coin, coin);
+  JumpSlide.addPlatform(750, 580, platform_width, platform_height);
+  // JumpSlide.addPlatform(825, 637, coin, coin);
+
+  // JumpSlide.addPlatform(1110, 370, coin, coin);
+  JumpSlide.addPlatform(1060, 480, platform_width, platform_height);
+
+  // JumpSlide.addPlatform(1390, 270, coin, coin);
+  JumpSlide.addPlatform(1350, 380, platform_width, platform_height);
+
+  // JumpSlide.addPlatform(1690, 170, coin, coin);
+  JumpSlide.addPlatform(1640, 280, platform_width, platform_height);
+
+  // JumpSlide.addPlatform(1990, 70, coin, coin);
+  JumpSlide.addPlatform(1920, 180, platform_width, platform_height);
+
+  // JumpSlide.addPlatform(2080, 70, coin, coin);
+  // JumpSlide.addPlatform(2140, 50, coin, coin);
+  // JumpSlide.addPlatform(2200, 100, coin, coin);
+  // JumpSlide.addPlatform(2250, 180, coin, coin);
+  // JumpSlide.addPlatform(2280, 250, coin, coin);
+  // JumpSlide.addPlatform(2320, 375, coin, coin);
+  // JumpSlide.addPlatform(2345, 600, coin, coin);
+
+
+  /* Lower Route */
+  JumpSlide.addPlatform(1610, floor_position, 1000, floor_height);
+  JumpSlide.addPlatform(2740, floor_position, 1000, floor_height);
+
   JumpSlide.start();
 }
 

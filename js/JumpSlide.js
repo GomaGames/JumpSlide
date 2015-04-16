@@ -14,7 +14,7 @@ JumpSlide = {};
  */
 
 JumpSlide.SETTINGS = { // default settings
-  background_color : 0x66FF99,
+  background_color : 0x3E4044,
   ipad_dimensions : [1024, 768],
   starting_point : {
     x : 100,
@@ -47,10 +47,10 @@ JumpSlide.addPlatform = function ( x, y, width, height ) {
   platform.position.x = x;
   platform.position.y = y;
 
-  platform.beginFill(0xFFFF00);
+  platform.beginFill(0xADC0C1);
 
-  // set the line style to have a width of 5 and set the color to red
-  platform.lineStyle(1, 0xFF0000);
+  // set the line style to have a width of 5 and set the color to #90A5A6
+  platform.lineStyle(1, 0x90A5A6);
 
   // draw a rectangle
   platform.drawRect( 0, 0, width, height );
