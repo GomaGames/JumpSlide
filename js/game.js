@@ -28,14 +28,13 @@ GAME.init = function (JumpSlide) {
   // JumpSlide.addPlatform(1990, 70, coin, coin);
   JumpSlide.addPlatform(1920, 180, platform_width, platform_height);
 
-  // JumpSlide.addPlatform(2080, 70, coin, coin);
-  // JumpSlide.addPlatform(2140, 50, coin, coin);
-  // JumpSlide.addPlatform(2200, 100, coin, coin);
-  // JumpSlide.addPlatform(2250, 180, coin, coin);
-  // JumpSlide.addPlatform(2280, 250, coin, coin);
-  // JumpSlide.addPlatform(2320, 375, coin, coin);
-  // JumpSlide.addPlatform(2345, 600, coin, coin);
-
+  JumpSlide.addCoin(2080, 70);
+  JumpSlide.addCoin(2140, 100);
+  JumpSlide.addCoin(2250, 180);
+  JumpSlide.addCoin(2280, 250);
+  JumpSlide.addCoin(2320, 375);
+  JumpSlide.addCoin(2345, 600);
+  
 
   /* Lower Route */
   JumpSlide.addPlatform(1610, floor_position, 1000, floor_height);

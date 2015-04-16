@@ -89,6 +89,19 @@ JumpSlide.removeSprite( coin );
 this will remove a sprite that has previously been created using `JumpSlide.createSprite()`. this is why it is helpful to store new sprites in a variable.
 
 
+#### JumpSlide.addCoin( x, y )
+
+will add a coin at specific position
+
+example:
+
+````
+JumpSlide.addCoin( 2080, 70 );
+````
+
+this will add a coin at position `{ x: 2080, y: 70 }`  
+coins are collectible and will increase `JumpSlide.score`  
+
 
 ## Debugging
 

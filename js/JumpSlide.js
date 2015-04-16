@@ -30,13 +30,16 @@ JumpSlide.SETTINGS = { // default settings
   },
   jump_velocity : 15,
   character_graphic : 1, // valid range 1-5
+  coin_graphic : "assets/coin.png",
   debug : false
 };
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
 JumpSlide.player = new PIXI.DisplayObjectContainer();
 
 JumpSlide.platforms = [];
+JumpSlide.coins = [];
 JumpSlide.texture_cache = {};
+JumpSlide.score = 0;
 
 /**
  * Public Methods
@@ -93,6 +96,34 @@ JumpSlide.removeSprite = function ( sprite ) {
   JumpSlide.stage.removeChild( sprite );
   
 };
+
+JumpSlide.addCoin = function ( x, y ) {
+  // get cached texture if exists
+  var texture = null;
+  if( JumpSlide.texture_cache.hasOwnProperty( JumpSlide.SETTINGS.coin_graphic ) ){
+    texture = JumpSlide.texture_cache[ JumpSlide.SETTINGS.coin_graphic ];
+  }else{
+    texture = PIXI.Texture.fromImage(  JumpSlide.SETTINGS.coin_graphic  );
+    JumpSlide.texture_cache[ JumpSlide.SETTINGS.coin_graphic ] = texture;
+  }
+  
+  var sprite = new PIXI.Sprite( texture );
+  sprite.anchor.x = 0.5;
+  sprite.anchor.y = 0.5;
+  sprite.position.x = x;
+  sprite.position.y = y;
+
+  JumpSlide.stage.addChild( sprite );
+  JumpSlide.coins.push( sprite );
+  
+  return sprite;
+};
+
+JumpSlide.collectCoin = function ( coin ) {
+  JumpSlide.score++;
+  this.removeSprite( coin );
+}
+
 JumpSlide.game_lose = null;
 JumpSlide.game_win = null;
 
@@ -275,6 +306,19 @@ JumpSlide.game_win = null;
 
     });
 
+    JumpSlide.coins.forEach(function (coin) {
+      // movement
+      if( JumpSlide.player.running ){
+        // move the stage, not the JumpSlide.player
+        if(JumpSlide.player.check_collision(coin)){
+          JumpSlide.collectCoin(coin);
+        }else{
+          coin.position.x -= JumpSlide.SETTINGS.run_speed;
+        }
+      }
+
+    });
+
     if( GAME_STATE == GAME_STATES.playing ){
       
       if( JumpSlide.player.stageX >= JumpSlide.SETTINGS.win_point ){
@@ -374,6 +418,22 @@ PIXI.DisplayObjectContainer.prototype.check_x_collision = function (displayObjec
            (otherBox.y + otherBox.height) < myBox.y);
 
   if( colliding ) this.collide_against_platform( displayObject );
+
+  return colliding;
+};
+
+PIXI.DisplayObjectContainer.prototype.check_collision = function (displayObject) {
+  var myBox = this.getLocalBounds();
+  myBox.x += this.position.x;
+  myBox.y += this.position.y;
+  var otherBox = displayObject.getLocalBounds();
+  otherBox.x = displayObject.position.x;
+  otherBox.y = displayObject.position.y;
+  
+  var colliding = !(otherBox.x > (myBox.x + myBox.width)  || 
+           (otherBox.x + otherBox.width ) < myBox.x || 
+           otherBox.y > (myBox.y + myBox.height) ||
+           (otherBox.y + otherBox.height) < myBox.y);
 
   return colliding;
 };
