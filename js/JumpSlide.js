@@ -92,11 +92,13 @@ JumpSlide.removeSprite = function ( sprite ) {
   JumpSlide.stage.removeChild( sprite );
   
 };
-
+JumpSlide.game_lose = null;
+JumpSlide.game_win = null;
 
 /**
  * Private Engine initialization
  */
+
 (function () {
 
   if( JumpSlide.SETTINGS.debug ) JumpSlide.player.debug();
@@ -138,6 +140,7 @@ JumpSlide.removeSprite = function ( sprite ) {
 
     // JumpSlide.player.anchor.y = 1;
     JumpSlide.player.vy = 0;
+    JumpSlide.player.vx = 0;
     JumpSlide.player.stageX = 0;
 
     // move the sprite to starting point
@@ -225,9 +228,10 @@ JumpSlide.removeSprite = function ( sprite ) {
 
     // apply vertical velocity
     JumpSlide.player.position.y += JumpSlide.player.vy;
+    JumpSlide.player.position.x += JumpSlide.player.vx *= .96;
 
     JumpSlide.player.on_platform = JumpSlide.platforms.reduce(function (p,c,i,a) {
-      return p || JumpSlide.player.check_collision(c);
+      return p || JumpSlide.player.check_y_collision(c);
     },false);
 
     JumpSlide.player.free_fall();
@@ -236,7 +240,8 @@ JumpSlide.removeSprite = function ( sprite ) {
       // movement
       if( JumpSlide.player.running ){
         // move the stage, not the JumpSlide.player
-        platform.position.x -= JumpSlide.SETTINGS.run_speed;
+        if(!JumpSlide.player.check_x_collision(platform))
+          platform.position.x -= JumpSlide.SETTINGS.run_speed;
       }
 
     });
@@ -270,7 +275,7 @@ JumpSlide.removeSprite = function ( sprite ) {
     GAME.loop( JumpSlide );
   }
 
-  function game_win() {
+  JumpSlide.game_win = function() {
     JumpSlide.player.running = false;
     JumpSlide.player.set_state( JumpSlide.player.states.idle );
     GAME_STATE = GAME_STATES.end;
@@ -280,7 +285,7 @@ JumpSlide.removeSprite = function ( sprite ) {
     GAME.win( JumpSlide );
   }
 
-  function game_lose() {
+  JumpSlide.game_lose = function() {
     JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
@@ -290,7 +295,6 @@ JumpSlide.removeSprite = function ( sprite ) {
   }
 
 })();
-
 
 /**
  * Initialize the GAME implementation
@@ -303,7 +307,7 @@ GAME.init(JumpSlide);
  * PIXI Sprite extensions
  */
 
-PIXI.DisplayObjectContainer.prototype.check_collision = function (displayObject) {
+PIXI.DisplayObjectContainer.prototype.check_y_collision = function (displayObject) {
   var myBox = this.getLocalBounds();
   myBox.x += this.position.x;
   myBox.y += this.position.y;
@@ -311,13 +315,36 @@ PIXI.DisplayObjectContainer.prototype.check_collision = function (displayObject)
   otherBox.x = displayObject.position.x;
   otherBox.y = displayObject.position.y;
 
-  // console.log(myBox, otherBox);
+  if( !(otherBox.x < (myBox.x + myBox.width) && (otherBox.x + otherBox.width ) > myBox.x) ){
+    return false
+  }
+  
+  var colliding = !(otherBox.y > (myBox.y + myBox.height) ||
+           (otherBox.y + otherBox.height) < myBox.y);
+
+  if( colliding ) this.collide_on_platform( displayObject );
+
+  return colliding;
+};
+
+PIXI.DisplayObjectContainer.prototype.check_x_collision = function (displayObject) {
+  var myBox = this.getLocalBounds();
+  myBox.x += this.position.x;
+  myBox.y += this.position.y;
+  var otherBox = displayObject.getLocalBounds();
+  otherBox.x = displayObject.position.x;
+  otherBox.y = displayObject.position.y;
+  
+  if( otherBox.y >= myBox.y+myBox.height){
+    return false;
+  }
+
   var colliding = !(otherBox.x > (myBox.x + myBox.width)  || 
            (otherBox.x + otherBox.width ) < myBox.x || 
            otherBox.y > (myBox.y + myBox.height) ||
            (otherBox.y + otherBox.height) < myBox.y);
 
-  if( colliding ) this.collide_with_platform( displayObject );
+  if( colliding ) this.collide_against_platform( displayObject );
 
   return colliding;
 };
@@ -329,15 +356,30 @@ PIXI.DisplayObjectContainer.prototype.free_fall = function () {
 
 }
 
-PIXI.DisplayObjectContainer.prototype.collide_with_platform = function (platform) {
-  
-  if( !this.is_jumping ){
+PIXI.DisplayObjectContainer.prototype.collide_on_platform = function (platform) {
 
+  if( !this.is_jumping ){
+  
     this.position.y = platform.y;
     this.vy = 0;
 
-    this.set_state( this.states.run );
+    if( this.hasOwnProperty("states") && this.running ){
+      this.set_state( this.states.run );
+    }
+
   }
+}
+
+PIXI.DisplayObjectContainer.prototype.collide_against_platform = function (platform) {
+
+  this.running = false;
+  this.vx = -3;
+
+  if( this.hasOwnProperty("states") ){
+    this.set_state( this.states.idle );
+  }
+
+  JumpSlide.game_lose();
 
 }
 
