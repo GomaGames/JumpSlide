@@ -323,12 +323,12 @@ JumpSlide.game_win = null;
       
       if( JumpSlide.player.stageX >= JumpSlide.SETTINGS.win_point ){
 
-        game_win();
+        JumpSlide.game_win();
 
       }else
       if( JumpSlide.player.position.y >= JumpSlide.SETTINGS.ipad_dimensions[1] ){
         
-        game_lose();
+        JumpSlide.game_lose();
 
       }else{
 
