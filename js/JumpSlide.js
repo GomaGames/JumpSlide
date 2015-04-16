@@ -24,7 +24,8 @@ JumpSlide.SETTINGS = { // default settings
   gravity : 0.9,
   run_speed : 5,
   controls : {
-    up : 300, // click area, top
+    up : 500, // click area, top
+    down : 524, // click area, down
     right : 700 // click area, right
   },
   jump_velocity : 15,
@@ -148,6 +149,7 @@ JumpSlide.game_win = null;
 
     JumpSlide.player.on_platform = false;
     JumpSlide.player.is_jumping = false;
+    JumpSlide.player.is_sliding = false;
 
     JumpSlide.stage.addChild( JumpSlide.player );
   }
@@ -160,7 +162,7 @@ JumpSlide.game_win = null;
   var startsprite = JumpSlide.createSprite("assets/start.png");
 
   // interaction
-  JumpSlide.stage.click = JumpSlide.stage.touchstart = function (event) {
+  JumpSlide.stage.click = JumpSlide.stage.tap = function (event) {
     var touched = {};
     if( event.originalEvent.toString() == "[object TouchEvent]" ){
       touched = event.global;
@@ -189,6 +191,33 @@ JumpSlide.game_win = null;
 
     }
   };
+
+  JumpSlide.stage.mousedown = JumpSlide.stage.touchstart = function (event) {
+    var touched = {};
+    if( event.originalEvent.toString() == "[object TouchEvent]" ){
+      touched = event.global;
+    }else{
+      touched.x = event.originalEvent.clientX;
+      touched.y = event.originalEvent.clientY;
+    }
+
+    if( GAME_STATE == GAME_STATES.playing ){
+
+      if( touched.y > JumpSlide.SETTINGS.controls.down ){
+        JumpSlide.player.slide();
+      }
+
+    }
+  }
+
+  JumpSlide.stage.mouseup = JumpSlide.stage.touchend = function (event) {
+    
+    if( GAME_STATE == GAME_STATES.playing ){
+
+      JumpSlide.player.stop_sliding();
+      
+    }
+  }
 
   // spritesheet loaded
   function prepareCharacterAssets () {
@@ -318,7 +347,7 @@ PIXI.DisplayObjectContainer.prototype.check_y_collision = function (displayObjec
   if( !(otherBox.x < (myBox.x + myBox.width) && (otherBox.x + otherBox.width ) > myBox.x) ){
     return false
   }
-  
+
   var colliding = !(otherBox.y > (myBox.y + myBox.height) ||
            (otherBox.y + otherBox.height) < myBox.y);
 
@@ -335,7 +364,7 @@ PIXI.DisplayObjectContainer.prototype.check_x_collision = function (displayObjec
   otherBox.x = displayObject.position.x;
   otherBox.y = displayObject.position.y;
   
-  if( otherBox.y >= myBox.y+myBox.height){
+  if( otherBox.y+2 >= myBox.y+myBox.height){ // +2 to compensate for overshot
     return false;
   }
 
@@ -363,7 +392,10 @@ PIXI.DisplayObjectContainer.prototype.collide_on_platform = function (platform) 
     this.position.y = platform.y;
     this.vy = 0;
 
-    if( this.hasOwnProperty("states") && this.running ){
+    if( this.hasOwnProperty("states") && 
+      this.current_state != this.states.run && 
+      !this.is_sliding &&
+      this.running ){
       this.set_state( this.states.run );
     }
 
@@ -389,6 +421,18 @@ PIXI.DisplayObjectContainer.prototype.jump = function () {
     this.is_jumping = true;
     this.set_state( this.states.jump );
   }
+}
+
+PIXI.DisplayObjectContainer.prototype.slide = function () {
+  if(this.on_platform){
+    this.is_sliding = true;
+    this.set_state( this.states.duck );
+  }
+}
+
+PIXI.DisplayObjectContainer.prototype.stop_sliding = function () {
+  this.is_sliding = false;
+  this.set_state( this.states.run );
 }
 
 PIXI.DisplayObjectContainer.prototype.set_state = function ( new_state ) {
