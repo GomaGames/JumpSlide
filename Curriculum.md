@@ -5,6 +5,7 @@
 ### Javascript Basics
 variables, strings, numbers, functions
 objects, dot notation
+dev tools, sublime text, chrome inspector
 
 ### Screen Coordinate System
 

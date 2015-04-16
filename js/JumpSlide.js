@@ -70,6 +70,7 @@ JumpSlide.createSprite = function ( path, x, y ) {
     texture = JumpSlide.texture_cache[path];
   }else{
     texture = PIXI.Texture.fromImage( path );
+    JumpSlide.texture_cache[path] = texture;
   }
   
   var sprite = new PIXI.Sprite( texture );
@@ -83,6 +84,11 @@ JumpSlide.createSprite = function ( path, x, y ) {
   return sprite;
 };
 
+JumpSlide.removeSprite = function ( sprite ) {
+  
+  JumpSlide.stage.removeChild( sprite );
+  
+};
 
 
 /**
@@ -148,7 +154,7 @@ JumpSlide.createSprite = function ( path, x, y ) {
 
       JumpSlide.player.running = true;
       GAME_STATE = GAME_STATES.playing;
-      JumpSlide.stage.removeChild(startsprite);
+      JumpSlide.removeSprite( startsprite );
 
     }else if( GAME_STATE == GAME_STATES.end ){
 
