@@ -123,6 +123,7 @@ JumpSlide.addCoin = function ( x, y ) {
 
 JumpSlide.collectCoin = function ( coin ) {
   JumpSlide.score++;
+  JumpSlide.score_board.setText( JumpSlide.score );
   this.removeSprite( coin );
 }
 
@@ -317,12 +318,13 @@ JumpSlide.game_win = null;
 
     });
 
-    JumpSlide.coins.forEach(function (coin) {
+    JumpSlide.coins.forEach(function (coin, i) {
       // movement
       if( JumpSlide.player.running ){
         // move the stage, not the JumpSlide.player
         if(JumpSlide.player.check_collision(coin)){
           JumpSlide.collectCoin(coin);
+          JumpSlide.coins.splice( i, 1 );
         }else{
           coin.position.x -= JumpSlide.SETTINGS.run_speed;
         }
