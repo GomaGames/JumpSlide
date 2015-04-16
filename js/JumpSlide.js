@@ -31,6 +31,7 @@ JumpSlide.SETTINGS = { // default settings
   jump_velocity : 15,
   character_graphic : 1, // valid range 1-5
   coin_graphic : "assets/coin.png",
+  bg_image : "assets/background.png",
   debug : false
 };
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
@@ -40,6 +41,7 @@ JumpSlide.platforms = [];
 JumpSlide.coins = [];
 JumpSlide.texture_cache = {};
 JumpSlide.score = 0;
+JumpSlide.score_board = null;
 
 /**
  * Public Methods
@@ -188,6 +190,15 @@ JumpSlide.game_win = null;
   //begin load
   loader.load();
 
+  // ui
+  var bg = JumpSlide.createSprite( JumpSlide.SETTINGS.bg_image );
+  JumpSlide.score_board = new PIXI.Text(JumpSlide.score, {font:"50px Arial", fill:"#FDE48B"});
+  JumpSlide.score_board.x = 960;
+  JumpSlide.score_board.y = 20;
+  JumpSlide.stage.addChild( JumpSlide.score_board );
+  var coin_symbol = JumpSlide.createSprite( JumpSlide.SETTINGS.coin_graphic, 890, 50 );
+  var score_times_symbol = JumpSlide.createSprite("assets/times.png", 936, 50 );
+  
 
   // start screen
   var startsprite = JumpSlide.createSprite("assets/start.png");
