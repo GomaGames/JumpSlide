@@ -192,7 +192,7 @@ JumpSlide.game_win = null;
 
   // ui
   var bg = JumpSlide.createSprite( JumpSlide.SETTINGS.bg_image );
-  JumpSlide.score_board = new PIXI.Text(JumpSlide.score, {font:"50px Arial", fill:"#FDE48B"});
+  JumpSlide.score_board = new PIXI.Text(JumpSlide.score, {font:"bold 50px Arial", fill:"#FDE48B"});
   JumpSlide.score_board.x = 960;
   JumpSlide.score_board.y = 20;
   JumpSlide.stage.addChild( JumpSlide.score_board );
@@ -359,13 +359,21 @@ JumpSlide.game_win = null;
     GAME.loop( JumpSlide );
   }
 
+  function show_endgame_ui () {
+    var overlay = JumpSlide.createSprite("assets/end_overlay.png");
+    JumpSlide.score_board = new PIXI.Text(JumpSlide.score, {font:"bold 70px Arial", fill:"#3E4044"});
+    JumpSlide.score_board.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2 - JumpSlide.score_board.width/2 ;
+    JumpSlide.score_board.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
+    JumpSlide.stage.addChild( JumpSlide.score_board );
+  }
+
   JumpSlide.game_win = function() {
     JumpSlide.player.running = false;
     JumpSlide.player.set_state( JumpSlide.player.states.idle );
     GAME_STATE = GAME_STATES.end;
 
-    var winsprite = JumpSlide.createSprite("assets/end_overlay.png");
-
+    show_endgame_ui();
+    
     GAME.win( JumpSlide );
   }
 
@@ -373,7 +381,7 @@ JumpSlide.game_win = null;
     JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
-    var losesprite = JumpSlide.createSprite("assets/end_overlay.png");
+    show_endgame_ui();
 
     GAME.lose( JumpSlide );
   }
