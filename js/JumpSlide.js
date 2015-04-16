@@ -32,7 +32,17 @@ JumpSlide.SETTINGS = { // default settings
   coin_graphic : "assets/coin.png",
   goal_graphic : "assets/flag.png",
   bg_image : "assets/background.png",
+  sfx : {
+    coin : "assets/sfx/coin.wav",
+    death : "assets/sfx/death.wav",
+    jump : "assets/sfx/jump.wav"
+  },
   debug : false
+};
+JumpSlide.sfx = {
+  coin : new Howl({ urls: [JumpSlide.SETTINGS.sfx.coin] }),
+  death : new Howl({ urls: [JumpSlide.SETTINGS.sfx.death] }),
+  jump : new Howl({ urls: [JumpSlide.SETTINGS.sfx.jump] })
 };
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
 JumpSlide.player = new PIXI.DisplayObjectContainer();
@@ -136,6 +146,7 @@ JumpSlide.collectCoin = function ( coin ) {
   JumpSlide.score++;
   JumpSlide.score_board.setText( JumpSlide.score );
   this.removeSprite( coin );
+  JumpSlide.sfx.coin.play();
 }
 
 JumpSlide.game_lose = null;
@@ -405,6 +416,8 @@ JumpSlide.game_win = null;
     show_endgame_ui();
 
     GAME.lose( JumpSlide );
+
+    JumpSlide.sfx.death.play();
   }
 
 })();
@@ -520,6 +533,7 @@ PIXI.DisplayObjectContainer.prototype.jump = function () {
     this.vy = -JumpSlide.SETTINGS.jump_velocity;
     this.is_jumping = true;
     this.set_state( this.states.jump );
+    JumpSlide.sfx.jump.play();
   }
 }
 
