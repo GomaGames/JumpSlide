@@ -270,8 +270,9 @@ JumpSlide.removeSprite = function ( sprite ) {
     GAME.loop( JumpSlide );
   }
 
-  game_win = function() {
+  function game_win() {
     JumpSlide.player.running = false;
+    JumpSlide.player.set_state( JumpSlide.player.states.idle );
     GAME_STATE = GAME_STATES.end;
 
     var winsprite = JumpSlide.createSprite("assets/end_overlay.png");
@@ -279,7 +280,7 @@ JumpSlide.removeSprite = function ( sprite ) {
     GAME.win( JumpSlide );
   }
 
-  game_lose = function() {
+  function game_lose() {
     JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
