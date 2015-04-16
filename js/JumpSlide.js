@@ -8,8 +8,12 @@
  */
 
 JumpSlide = {};
-// default settings
-JumpSlide.SETTINGS = {
+
+/**
+ * Public Properties
+ */
+
+JumpSlide.SETTINGS = { // default settings
   background_color : 0x66FF99,
   ipad_dimensions : [1024, 768],
   starting_point : {
@@ -24,14 +28,65 @@ JumpSlide.SETTINGS = {
     right : 700 // click area, right
   },
   jump_velocity : 15
-}
+};
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
 JumpSlide.player = null;
 JumpSlide.platforms = [];
+JumpSlide.texture_cache = {};
+
+/**
+ * Public Methods
+ */
+JumpSlide.addPlatform = function ( x, y, width, height ) {
+
+  var platform = new PIXI.Graphics();
+  platform.position.x = x;
+  platform.position.y = y;
+
+  platform.beginFill(0xFFFF00);
+
+  // set the line style to have a width of 5 and set the color to red
+  platform.lineStyle(1, 0xFF0000);
+
+  // draw a rectangle
+  platform.drawRect( 0, 0, width, height );
+
+  platform.endFill();
+
+  JumpSlide.stage.addChild( platform );
+
+  JumpSlide.platforms.push(platform);
+  
+};
+
+JumpSlide.createSprite = function ( path, x, y ) {
+  // default to middle of screen
+  x = x || JumpSlide.SETTINGS.ipad_dimensions[0]/2;
+  y = y || JumpSlide.SETTINGS.ipad_dimensions[1]/2;
+
+  // get cached texture if exists
+  var texture = null;
+  if( JumpSlide.texture_cache.hasOwnProperty(path) ){
+    texture = JumpSlide.texture_cache[path];
+  }else{
+    texture = PIXI.Texture.fromImage( path );
+  }
+  
+  var sprite = new PIXI.Sprite( texture );
+  sprite.anchor.x = 0.5;
+  sprite.anchor.y = 0.5;
+  sprite.position.x = x;
+  sprite.position.y = y;
+
+  JumpSlide.stage.addChild( sprite );
+  
+  return sprite;
+};
+
 
 
 /**
- * Private Engine IIFE
+ * Private Engine initialization
  */
 (function () {
 
@@ -53,11 +108,7 @@ JumpSlide.platforms = [];
   }
 
   // character
-  
-  // create a texture from an image path
-  var texture = PIXI.Texture.fromImage("assets/bunny.png");
-  // create a new Sprite using the texture
-  JumpSlide.player = new PIXI.Sprite(texture);
+  JumpSlide.player = JumpSlide.createSprite("assets/bunny.png", JumpSlide.SETTINGS.starting_point.x, JumpSlide.SETTINGS.starting_point.y);
 
   // move the sprite's anchor point to feet
   JumpSlide.player.anchor.x = 0.5;
@@ -67,27 +118,15 @@ JumpSlide.platforms = [];
   JumpSlide.player.stageX = 0;
 
   // move the sprite to starting point
-  JumpSlide.player.position.x = JumpSlide.SETTINGS.starting_point.x;
-  JumpSlide.player.position.y = JumpSlide.SETTINGS.starting_point.y;
   JumpSlide.player.new_position = JumpSlide.player.position;
 
   JumpSlide.player.on_platform = false;
   JumpSlide.player.is_jumping = false;
 
-  JumpSlide.stage.addChild(JumpSlide.player);
-
 
 
   // start screen
-  var start_texture = PIXI.Texture.fromImage("assets/START_GAME.png");
-  var startsprite = new PIXI.Sprite(start_texture);
-
-  // move the sprite's anchor point to feet
-  startsprite.anchor.x = 0.5;
-  startsprite.anchor.y = 0.5;
-  startsprite.position.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2;
-  startsprite.position.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
-  JumpSlide.stage.addChild(startsprite);
+  var startsprite = JumpSlide.createSprite("assets/START_GAME.png");
 
   // interaction
   JumpSlide.stage.click = JumpSlide.stage.touchstart = function (event) {
@@ -175,16 +214,7 @@ JumpSlide.platforms = [];
     JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
-    var texture = PIXI.Texture.fromImage("assets/WIN_GAME.png");
-    var winsprite = new PIXI.Sprite(texture);
-
-    // move the sprite's anchor point to feet
-    winsprite.anchor.x = 0.5;
-    winsprite.anchor.y = 0.5;
-    winsprite.position.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2;
-    winsprite.position.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
-
-    JumpSlide.stage.addChild( winsprite );
+    var winsprite = JumpSlide.createSprite("assets/WIN_GAME.png");
 
     GAME.win( JumpSlide );
   }
@@ -193,16 +223,7 @@ JumpSlide.platforms = [];
     JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
-    var texture = PIXI.Texture.fromImage("assets/END_GAME.png");
-    var losesprite = new PIXI.Sprite(texture);
-
-    // move the sprite's anchor point to feet
-    losesprite.anchor.x = 0.5;
-    losesprite.anchor.y = 0.5;
-    losesprite.position.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2;
-    losesprite.position.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
-
-    JumpSlide.stage.addChild( losesprite );
+    var losesprite = JumpSlide.createSprite("assets/END_GAME.png");
 
     GAME.lose( JumpSlide );
   }
@@ -210,31 +231,16 @@ JumpSlide.platforms = [];
 })();
 
 
-
-JumpSlide.addPlatform = function ( x, y, width, height ) {
-
-  var platform = new PIXI.Graphics();
-  platform.position.x = x;
-  platform.position.y = y;
-
-  platform.beginFill(0xFFFF00);
-
-  // set the line style to have a width of 5 and set the color to red
-  platform.lineStyle(1, 0xFF0000);
-
-  // draw a rectangle
-  platform.drawRect( 0, 0, width, height );
-
-  platform.endFill();
-
-  JumpSlide.stage.addChild( platform );
-
-  JumpSlide.platforms.push(platform);
-  
-}
+/**
+ * Initialize the GAME implementation
+ */
 
 GAME.init(JumpSlide);
 
+
+/**
+ * PIXI Sprite extensions
+ */
 
 PIXI.Sprite.prototype.check_collision = function (displayObject) {
   var myBox = this.getLocalBounds();
