@@ -28,6 +28,7 @@ JumpSlide.SETTINGS = { // default settings
     right : 700 // click area, right
   },
   jump_velocity : 15,
+  character_graphic : 1, // valid range 1-5
   debug : false
 };
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
@@ -190,7 +191,6 @@ JumpSlide.removeSprite = function ( sprite ) {
     // create an array to store the alien textures
     var alienTextures = {};
     
-    var alienNumber = 2;
     var frames = {
       idle : "idle",
       duck : "duck",
@@ -200,7 +200,7 @@ JumpSlide.removeSprite = function ( sprite ) {
     }
     for (var frame in frames) 
     {
-      var texture = PIXI.Texture.fromFrame("1_green" + alienNumber + "_" + frame + ".png");
+      var texture = PIXI.Texture.fromFrame("1_green" + JumpSlide.SETTINGS.character_graphic + "_" + frame + ".png");
       alienTextures[frame] = texture;
     };
     
