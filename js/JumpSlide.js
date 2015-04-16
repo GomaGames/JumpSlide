@@ -177,6 +177,7 @@ JumpSlide.removeSprite = function ( sprite ) {
       JumpSlide.player.running = true;
       GAME_STATE = GAME_STATES.playing;
       JumpSlide.removeSprite( startsprite );
+      JumpSlide.player.set_state( JumpSlide.player.states.run );
 
     }else if( GAME_STATE == GAME_STATES.end ){
 
@@ -333,6 +334,8 @@ PIXI.DisplayObjectContainer.prototype.collide_with_platform = function (platform
 
     this.position.y = platform.y;
     this.vy = 0;
+
+    this.set_state( this.states.run );
   }
 
 }
@@ -341,6 +344,7 @@ PIXI.DisplayObjectContainer.prototype.jump = function () {
   if(this.on_platform){
     this.vy = -JumpSlide.SETTINGS.jump_velocity;
     this.is_jumping = true;
+    this.set_state( this.states.jump );
   }
 }
 
@@ -356,7 +360,10 @@ PIXI.DisplayObjectContainer.prototype.set_state = function ( new_state ) {
   
   this.addChild( this.current_state );
 
-  console.log('this.current_state',this.current_state);
+  if( this.current_state.__proto__.hasOwnProperty("play") ){
+    this.current_state.play();
+    this.current_state.animationSpeed = 0.1;
+  }
 }
 
 PIXI.DisplayObjectContainer.prototype.debug = function ( ) {
