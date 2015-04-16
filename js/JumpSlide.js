@@ -35,14 +35,16 @@ JumpSlide.SETTINGS = { // default settings
   sfx : {
     coin : "assets/sfx/coin.wav",
     death : "assets/sfx/death.wav",
-    jump : "assets/sfx/jump.wav"
+    jump : "assets/sfx/jump.wav",
+    win : "assets/sfx/win.wav",
   },
   debug : false
 };
 JumpSlide.sfx = {
   coin : new Howl({ urls: [JumpSlide.SETTINGS.sfx.coin] }),
   death : new Howl({ urls: [JumpSlide.SETTINGS.sfx.death] }),
-  jump : new Howl({ urls: [JumpSlide.SETTINGS.sfx.jump] })
+  jump : new Howl({ urls: [JumpSlide.SETTINGS.sfx.jump] }),
+  win : new Howl({ urls: [JumpSlide.SETTINGS.sfx.win] })
 };
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
 JumpSlide.player = new PIXI.DisplayObjectContainer();
@@ -407,6 +409,8 @@ JumpSlide.game_win = null;
     show_endgame_ui();
     
     GAME.win( JumpSlide );
+
+    JumpSlide.sfx.win.play();
   }
 
   JumpSlide.game_lose = function() {
