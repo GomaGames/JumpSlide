@@ -40,6 +40,9 @@ GAME.init = function (JumpSlide) {
   JumpSlide.addPlatform(1610, floor_position, 1000, floor_height);
   JumpSlide.addPlatform(2740, floor_position, 1000, floor_height);
 
+  // win condition
+  JumpSlide.addGoal(2845, 650);
+
   JumpSlide.start();
 }
 

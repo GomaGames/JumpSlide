@@ -20,7 +20,6 @@ JumpSlide.SETTINGS = { // default settings
     x : 100,
     y : 200
   },
-  win_point : 4000,
   gravity : 0.9,
   run_speed : 5,
   controls : {
@@ -31,6 +30,7 @@ JumpSlide.SETTINGS = { // default settings
   jump_velocity : 15,
   character_graphic : 1, // valid range 1-5
   coin_graphic : "assets/coin.png",
+  goal_graphic : "assets/flag.png",
   bg_image : "assets/background.png",
   debug : false
 };
@@ -39,6 +39,7 @@ JumpSlide.player = new PIXI.DisplayObjectContainer();
 
 JumpSlide.platforms = [];
 JumpSlide.coins = [];
+JumpSlide.goals = [];
 JumpSlide.texture_cache = {};
 JumpSlide.score = 0;
 JumpSlide.score_board = null;
@@ -65,6 +66,16 @@ JumpSlide.addPlatform = function ( x, y, width, height ) {
   JumpSlide.stage.addChild( platform );
 
   JumpSlide.platforms.push(platform);
+  
+};
+
+JumpSlide.addGoal = function ( x, y ) {
+
+  var goal = this.createSprite( JumpSlide.SETTINGS.goal_graphic, x, y );
+
+  JumpSlide.stage.addChild( goal );
+
+  JumpSlide.goals.push(goal);
   
 };
 
@@ -332,13 +343,21 @@ JumpSlide.game_win = null;
 
     });
 
+    JumpSlide.goals.forEach(function (goal) {
+      // win condition
+      if( JumpSlide.player.running ){
+        // move the stage, not the JumpSlide.player
+        if(JumpSlide.player.check_collision(goal)){
+          JumpSlide.game_win();
+        }else{
+          goal.position.x -= JumpSlide.SETTINGS.run_speed;
+        }
+      }
+
+    });
+
     if( GAME_STATE == GAME_STATES.playing ){
       
-      if( JumpSlide.player.stageX >= JumpSlide.SETTINGS.win_point ){
-
-        JumpSlide.game_win();
-
-      }else
       if( JumpSlide.player.position.y >= JumpSlide.SETTINGS.ipad_dimensions[1] ){
         
         JumpSlide.game_lose();
