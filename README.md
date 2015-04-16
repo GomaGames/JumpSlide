@@ -88,3 +88,12 @@ JumpSlide.removeSprite( coin );
 
 this will remove a sprite that has previously been created using `JumpSlide.createSprite()`. this is why it is helpful to store new sprites in a variable.
 
+
+
+## Debugging
+
+You can enable showing the players bounding box by enabling JumpSlide.SETTINGS.debug
+
+````
+JumpSlide.SETTINGS.debug = true;
+````

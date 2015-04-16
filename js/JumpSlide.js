@@ -27,10 +27,12 @@ JumpSlide.SETTINGS = { // default settings
     up : 300, // click area, top
     right : 700 // click area, right
   },
-  jump_velocity : 15
+  jump_velocity : 15,
+  debug : false
 };
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
-JumpSlide.player = null;
+JumpSlide.player = new PIXI.DisplayObjectContainer();
+
 JumpSlide.platforms = [];
 JumpSlide.texture_cache = {};
 
@@ -96,6 +98,8 @@ JumpSlide.removeSprite = function ( sprite ) {
  */
 (function () {
 
+  if( JumpSlide.SETTINGS.debug ) JumpSlide.player.debug();
+
   var GAME_STATES = {
     start : "start",
     playing : "playing",
@@ -114,25 +118,42 @@ JumpSlide.removeSprite = function ( sprite ) {
   }
 
   // character
-  JumpSlide.player = JumpSlide.createSprite("assets/bunny.png", JumpSlide.SETTINGS.starting_point.x, JumpSlide.SETTINGS.starting_point.y);
+  // 
+  // create an array of assets to load
+  var assetsToLoad = [ "assets/alien.json"];
+  
+  // create a new loader
+  loader = new PIXI.AssetLoader(assetsToLoad);
+  
+  // use callback
+  loader.onComplete = function(){
+    // adds JumpSlide.player.states hash
+    prepareCharacterAssets();
+    
+    JumpSlide.player.set_state( JumpSlide.player.states.idle );
 
-  // move the sprite's anchor point to feet
-  JumpSlide.player.anchor.x = 0.5;
-  JumpSlide.player.anchor.y = 1.0;
-  // JumpSlide.player.anchor.y = 1;
-  JumpSlide.player.vy = 0;
-  JumpSlide.player.stageX = 0;
+    JumpSlide.player.position.x = JumpSlide.SETTINGS.starting_point.x;
+    JumpSlide.player.position.y = JumpSlide.SETTINGS.starting_point.y;
 
-  // move the sprite to starting point
-  JumpSlide.player.new_position = JumpSlide.player.position;
+    // JumpSlide.player.anchor.y = 1;
+    JumpSlide.player.vy = 0;
+    JumpSlide.player.stageX = 0;
 
-  JumpSlide.player.on_platform = false;
-  JumpSlide.player.is_jumping = false;
+    // move the sprite to starting point
+    JumpSlide.player.new_position = JumpSlide.player.position;
 
+    JumpSlide.player.on_platform = false;
+    JumpSlide.player.is_jumping = false;
+
+    JumpSlide.stage.addChild( JumpSlide.player );
+  }
+  
+  //begin load
+  loader.load();
 
 
   // start screen
-  var startsprite = JumpSlide.createSprite("assets/START_GAME.png");
+  var startsprite = JumpSlide.createSprite("assets/start.png");
 
   // interaction
   JumpSlide.stage.click = JumpSlide.stage.touchstart = function (event) {
@@ -163,6 +184,34 @@ JumpSlide.removeSprite = function ( sprite ) {
 
     }
   };
+
+  // spritesheet loaded
+  function prepareCharacterAssets () {
+    // create an array to store the alien textures
+    var alienTextures = {};
+    
+    var alienNumber = 2;
+    var frames = {
+      idle : "idle",
+      duck : "duck",
+      walk_1 : "walk_1",
+      walk_2 : "walk_2",
+      jump : "jump"
+    }
+    for (var frame in frames) 
+    {
+      var texture = PIXI.Texture.fromFrame("1_green" + alienNumber + "_" + frame + ".png");
+      alienTextures[frame] = texture;
+    };
+    
+    // create display objects to store on JumpSlide.player
+    JumpSlide.player.states = {
+      idle : new PIXI.Sprite( alienTextures["idle"] ),
+      duck : new PIXI.Sprite( alienTextures["duck"] ),
+      jump : new PIXI.Sprite( alienTextures["jump"] ),
+      run  : new PIXI.MovieClip( [ alienTextures["walk_1"], alienTextures["walk_2"] ] )
+    }
+  }
 
 
   // game loop
@@ -209,7 +258,11 @@ JumpSlide.removeSprite = function ( sprite ) {
       }
 
     } // end GAME_SATES.playing
-  
+
+
+    // debugger
+    if( JumpSlide.SETTINGS.debug ) JumpSlide.player.debugUpdate();
+    
     // render the stage   
     renderer.render( JumpSlide.stage );
 
@@ -220,7 +273,7 @@ JumpSlide.removeSprite = function ( sprite ) {
     JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
-    var winsprite = JumpSlide.createSprite("assets/WIN_GAME.png");
+    var winsprite = JumpSlide.createSprite("assets/end_overlay.png");
 
     GAME.win( JumpSlide );
   }
@@ -229,7 +282,7 @@ JumpSlide.removeSprite = function ( sprite ) {
     JumpSlide.player.running = false;
     GAME_STATE = GAME_STATES.end;
 
-    var losesprite = JumpSlide.createSprite("assets/END_GAME.png");
+    var losesprite = JumpSlide.createSprite("assets/end_overlay.png");
 
     GAME.lose( JumpSlide );
   }
@@ -248,18 +301,18 @@ GAME.init(JumpSlide);
  * PIXI Sprite extensions
  */
 
-PIXI.Sprite.prototype.check_collision = function (displayObject) {
+PIXI.DisplayObjectContainer.prototype.check_collision = function (displayObject) {
   var myBox = this.getLocalBounds();
-  myBox.x = this.position.x;
-  myBox.y = this.position.y;
+  myBox.x += this.position.x;
+  myBox.y += this.position.y;
   var otherBox = displayObject.getLocalBounds();
   otherBox.x = displayObject.position.x;
   otherBox.y = displayObject.position.y;
 
   // console.log(myBox, otherBox);
-  var colliding = !(otherBox.x > (myBox.x + myBox.width/2)  || 
+  var colliding = !(otherBox.x > (myBox.x + myBox.width)  || 
            (otherBox.x + otherBox.width ) < myBox.x || 
-           otherBox.y > (myBox.y + myBox.height/2) ||
+           otherBox.y > (myBox.y + myBox.height) ||
            (otherBox.y + otherBox.height) < myBox.y);
 
   if( colliding ) this.collide_with_platform( displayObject );
@@ -268,13 +321,13 @@ PIXI.Sprite.prototype.check_collision = function (displayObject) {
 };
 
 
-PIXI.Sprite.prototype.free_fall = function () {
+PIXI.DisplayObjectContainer.prototype.free_fall = function () {
   
   this.is_jumping = false;
 
 }
 
-PIXI.Sprite.prototype.collide_with_platform = function (platform) {
+PIXI.DisplayObjectContainer.prototype.collide_with_platform = function (platform) {
   
   if( !this.is_jumping ){
 
@@ -284,9 +337,43 @@ PIXI.Sprite.prototype.collide_with_platform = function (platform) {
 
 }
 
-PIXI.Sprite.prototype.jump = function () {
+PIXI.DisplayObjectContainer.prototype.jump = function () {
   if(this.on_platform){
     this.vy = -JumpSlide.SETTINGS.jump_velocity;
     this.is_jumping = true;
   }
+}
+
+PIXI.DisplayObjectContainer.prototype.set_state = function ( new_state ) {
+  if(this.current_state !== undefined){
+    this.removeChild( this.current_state );
+  }
+  this.current_state = new_state;
+
+  // move the sprite's anchor point to feet
+  this.current_state.anchor.x = 0.5;
+  this.current_state.anchor.y = 1.0;
+  
+  this.addChild( this.current_state );
+
+  console.log('this.current_state',this.current_state);
+}
+
+PIXI.DisplayObjectContainer.prototype.debug = function ( ) {
+  var boundingBox = new PIXI.Graphics();
+
+  boundingBox.lineStyle(2, 0xFF0000);
+
+  boundingBox.drawRect( 0, 0, this.getLocalBounds().width, this.getLocalBounds().height );
+
+  boundingBox.position.x = this.position.x + this.getLocalBounds().x;
+  boundingBox.position.y = this.position.y + this.getLocalBounds().y;
+
+  JumpSlide.stage.addChild( boundingBox );
+  this.debugGraphic = boundingBox;
+}
+
+PIXI.DisplayObjectContainer.prototype.debugUpdate = function ( ) {
+  JumpSlide.stage.removeChild( this.debugGraphic );
+  this.debug();
 }
