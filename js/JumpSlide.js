@@ -398,18 +398,12 @@ JumpSlide.game_win = null;
     });
     */
 
+    /*
+    Moved to public api JumpSlide.forEachCoin
     JumpSlide.goals.forEach(function (goal) {
-      // win condition
-      if( JumpSlide.player.running ){
-        // move the stage, not the JumpSlide.player
-        if(JumpSlide.player.check_collision(goal)){
-          JumpSlide.game_win();
-        }else{
-          goal.position.x -= JumpSlide.SETTINGS.run_speed;
-        }
-      }
-
+      
     });
+    */
 
     if( GAME_STATE == GAME_STATES.playing ){
       

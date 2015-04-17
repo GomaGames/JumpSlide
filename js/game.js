@@ -58,7 +58,7 @@ GAME.loop = function (JumpSlide) {
 
   // loop through each coin
   JumpSlide.forEachCoin(function(coin) {
-    
+
     // translate it's x position
     coin.position.x -= JumpSlide.SETTINGS.run_speed;
 
@@ -73,10 +73,20 @@ GAME.loop = function (JumpSlide) {
     }
   });
 
+  // loop through each platform
+  JumpSlide.forEachGoal(function(goal) {
+    // translate it's x position
+    goal.position.x -= JumpSlide.SETTINGS.run_speed;
+
+    // victory condition
+    if(JumpSlide.player.check_collision(goal)){
+      JumpSlide.game_win();
+    }
+  });
 }
 
 GAME.win = function (JumpSlide) {
-  
+  alert("you win");
 }
 
 GAME.lose = function (JumpSlide) {
