@@ -1,5 +1,16 @@
 # JumpSlide
 
+1. [Tutorial](#tutorial)
+2. [Game Interface](#game-interface)
+3. [JumpSlide API](#jumpslide-api)
+	1. [Public Properties](#jumpslide-public-properties)
+	2. [JumpSlide.SETTINGS](#jumpslidesettings)
+	3. [Public Methods](#jumpslide-public-methods)
+4. [JumpSlide.player API](#jumpslideplayer-api)
+	1. [Public Properties](#jumpslideplayer-public-properties-1)
+	2. [Public Methods](#jumpslideplayer-public-methods-1)
+5. [Debugging](#debugging)
+
 ## About
 
 JumpSlide is a game engine used for demonstrating basic game development topics while creating a "runner" type platform game.  
@@ -457,6 +468,7 @@ These states can be accessed using dot notation, for example, to access the `jum
 JumpSlide.player.states.jump
 ````
 
+### JumpSlide public methods
 
 ##### JumpSlide.player.set_state( new_state )
 The `new_state` argument must be one of the values defined in `JumpSlide.player.states`  
@@ -489,8 +501,21 @@ _the player will be set to state `duck`_
 ##### JumpSlide.player.stop_sliding( )
 Makes the player stop sliding only if the player is currently sliding.  
 
+
 ## Debugging
 
+During any development, you should always have your Chrome Javascript Console  
+![Chrome JS Console](http://i.imgur.com/aFLxvjw.png =500x)  
+
+and have the console always visible so you can see errors  
+any errors will be in **red**, for example:  
+![Error](http://i.imgur.com/2AVNOYc.png =500x)
+
+You can use the console to inspect object properties  
+For example, type `JumpSlide.player` and `JumpSlide.player.properties` in the interactive console.  
+![Using the console](http://i.imgur.com/fDrL8PU.png =500x)
+
+_advanced_  
 You can enable showing the players bounding box by enabling JumpSlide.SETTINGS.debug
 
 ````
