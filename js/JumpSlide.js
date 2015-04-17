@@ -165,10 +165,38 @@ JumpSlide.forEachCoin = function( cb ){
     
     if( JumpSlide.player.running ){
 
-      coin.position.x -= JumpSlide.SETTINGS.run_speed;
-
       cb( coin );
 
+    }
+
+  });
+
+};
+
+JumpSlide.forEachPlatform = function( cb ) {
+  
+  JumpSlide.platforms.forEach(function (platform) {
+    
+    if( JumpSlide.player.running ){
+      
+      if(!JumpSlide.player.check_x_collision(platform)){
+        cb(platform);
+      }
+    }
+
+  });
+
+};
+
+JumpSlide.forEachGoal = function( cb ) {
+  
+  JumpSlide.goals.forEach(function (goal) {
+    
+    if( JumpSlide.player.running ){
+      
+      if(!JumpSlide.player.check_x_collision(goal)){
+        cb(goal);
+      }
     }
 
   });
@@ -356,15 +384,12 @@ JumpSlide.game_win = null;
 
     JumpSlide.player.free_fall();
 
+    /*
+    Moved to public api JumpSlide.forEachPlatform
     JumpSlide.platforms.forEach(function (platform) {
-      // movement
-      if( JumpSlide.player.running ){
-        // move the stage, not the JumpSlide.player
-        if(!JumpSlide.player.check_x_collision(platform))
-          platform.position.x -= JumpSlide.SETTINGS.run_speed;
-      }
-
+      
     });
+    */
 
     /*
     Moved to public api JumpSlide.forEachCoin

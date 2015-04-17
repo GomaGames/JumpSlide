@@ -48,10 +48,27 @@ GAME.init = function (JumpSlide) {
 }
 
 GAME.loop = function (JumpSlide) {
-  
+
+  // make the player run right
+  // by looping through each platform
+  JumpSlide.forEachPlatform(function(platform) {
+    // translate it's x position
+    platform.position.x -= JumpSlide.SETTINGS.run_speed;
+  });
+
+  // loop through each coin
   JumpSlide.forEachCoin(function(coin) {
+    
+    // translate it's x position
+    coin.position.x -= JumpSlide.SETTINGS.run_speed;
+
+    // check if player is touching coin
     if(JumpSlide.player.check_collision(coin)){
+
+      // collect the coin to score
       JumpSlide.collectCoin(coin);
+
+      // play coin sound effects
       JumpSlide.sfx.coin.play();
     }
   });
