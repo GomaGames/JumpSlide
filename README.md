@@ -22,7 +22,10 @@ _There is a known issue where audio does not work on iOS._
 
 JumpSlide uses the [PixiJS](http://pixijs.com) game engine and is written in the JavaScript language.  
 
-Find more educational Game Development resources at [stem.gomagames.com](http://stem.gomagames.com) 
+Find more educational Game Development resources at [stem.gomagames.com](http://stem.gomagames.com)  
+
+_for advanced users_
+[The PixiJS API documentation](http://www.goodboydigital.com/pixijs/docs/)
 
 ## Tutorial
 
