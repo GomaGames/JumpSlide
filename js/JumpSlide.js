@@ -24,11 +24,10 @@ JumpSlide.SETTINGS = { // default settings
   run_speed : 5,
   controls : {
     up : 500, // click area, top
-    down : 524, // click area, down
-    right : 700 // click area, right
+    down : 524 // click area, down
   },
-  jump_velocity : 15,
-  character_graphic : 1, // valid range 1-5
+  jump_velocity : 15, // jump height
+  character_graphic : 1, // which alien graphic to use, valid range 1-5
   coin_graphic : "assets/coin.png",
   goal_graphic : "assets/flag.png",
   bg_image : "assets/background.png",
@@ -38,7 +37,7 @@ JumpSlide.SETTINGS = { // default settings
     jump : "assets/sfx/jump.m4a",
     win : "assets/sfx/win.m4a",
   },
-  debug : false
+  debug : false // set to true to show bounding box
 };
 // convenience
 JumpSlide.SETTINGS.ipad_dimensions.width = JumpSlide.SETTINGS.ipad_dimensions[0];
