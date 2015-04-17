@@ -33,18 +33,21 @@ JumpSlide.SETTINGS = { // default settings
   goal_graphic : "assets/flag.png",
   bg_image : "assets/background.png",
   sfx : {
-    coin : "assets/sfx/coin.wav",
-    death : "assets/sfx/death.wav",
-    jump : "assets/sfx/jump.wav",
-    win : "assets/sfx/win.wav",
+    coin : "assets/sfx/coin.m4a",
+    death : "assets/sfx/death.m4a",
+    jump : "assets/sfx/jump.m4a",
+    win : "assets/sfx/win.m4a",
   },
   debug : false
 };
+
+// doesn't work great on ios
 JumpSlide.sfx = {
-  coin : new Howl({ urls: [JumpSlide.SETTINGS.sfx.coin] }),
-  death : new Howl({ urls: [JumpSlide.SETTINGS.sfx.death] }),
-  jump : new Howl({ urls: [JumpSlide.SETTINGS.sfx.jump] }),
-  win : new Howl({ urls: [JumpSlide.SETTINGS.sfx.win] })
+  coin : new Howl({ urls: [JumpSlide.SETTINGS.sfx.coin], buffer:true }),
+  death : new Howl({ urls: [JumpSlide.SETTINGS.sfx.death], buffer:true }),
+  jump : new Howl({ urls: [JumpSlide.SETTINGS.sfx.jump], buffer:true }),
+  win : new Howl({ urls: [JumpSlide.SETTINGS.sfx.win], buffer:true })
+  
 };
 JumpSlide.stage = new PIXI.Stage(JumpSlide.SETTINGS.background_color);
 JumpSlide.player = new PIXI.DisplayObjectContainer();
