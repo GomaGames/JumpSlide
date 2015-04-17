@@ -102,6 +102,23 @@ GAME.tap = function ( point ) {
   
 }
 
+GAME.touch_start = function ( point ) {
+
+  // check if player touches bottom part of screen
+  if( point.y > JumpSlide.SETTINGS.controls.down ){
+
+    // make player start sliding
+    JumpSlide.player.slide();
+  }
+
+}
+
+GAME.touch_end = function ( point ) {
+
+  JumpSlide.player.stop_sliding();
+
+}
+
 GAME.win = function (JumpSlide) {
   
 }

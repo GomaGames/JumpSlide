@@ -317,9 +317,7 @@ JumpSlide.game_win = null;
 
     if( GAME_STATE == GAME_STATES.playing ){
 
-      if( touched.y > JumpSlide.SETTINGS.controls.down ){
-        JumpSlide.player.slide();
-      }
+      GAME.touch_start( touched );
 
     }
   }
@@ -328,7 +326,7 @@ JumpSlide.game_win = null;
     
     if( GAME_STATE == GAME_STATES.playing ){
 
-      JumpSlide.player.stop_sliding();
+      GAME.touch_end();
       
     }
   }
