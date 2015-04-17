@@ -7,8 +7,8 @@
 	2. [JumpSlide.SETTINGS](#jumpslidesettings)
 	3. [Public Methods](#jumpslide-public-methods)
 4. [JumpSlide.player API](#jumpslideplayer-api)
-	1. [Public Properties](#jumpslideplayer-public-properties-1)
-	2. [Public Methods](#jumpslideplayer-public-methods-1)
+	1. [Public Properties](#jumpslideplayer-public-properties)
+	2. [Public Methods](#jumpslideplayer-public-methods)
 5. [Debugging](#debugging)
 
 ## About
@@ -417,7 +417,7 @@ These methods have been added to the `JumpSlide.player` object internally, by th
 _Technical details will be noted in italics, they are safe to ignore_
 
 
-### JumpSlide public properties
+### JumpSlide.player public properties
 
 ##### JumpSlide.player.position.x : Number
 the player's `x` position
@@ -468,7 +468,7 @@ These states can be accessed using dot notation, for example, to access the `jum
 JumpSlide.player.states.jump
 ````
 
-### JumpSlide public methods
+### JumpSlide.player public methods
 
 ##### JumpSlide.player.set_state( new_state )
 The `new_state` argument must be one of the values defined in `JumpSlide.player.states`  
