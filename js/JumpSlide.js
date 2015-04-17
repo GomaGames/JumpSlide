@@ -289,9 +289,7 @@ JumpSlide.game_win = null;
 
     if( GAME_STATE == GAME_STATES.playing ){
 
-      if( touched.y < JumpSlide.SETTINGS.controls.up ){
-        JumpSlide.player.jump();
-      }
+      GAME.tap( touched );
 
     }else if( GAME_STATE == GAME_STATES.start ){
 
@@ -416,7 +414,7 @@ JumpSlide.game_win = null;
     
     // render the stage   
     renderer.render( JumpSlide.stage );
-    
+
   }
 
   function show_endgame_ui () {

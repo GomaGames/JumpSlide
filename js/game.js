@@ -91,6 +91,17 @@ GAME.loop = function (JumpSlide) {
 
 }
 
+GAME.tap = function ( point ) {
+
+  // check if player touches top part of screen
+  if( point.y < JumpSlide.SETTINGS.controls.up ){
+
+    // make player jump
+    JumpSlide.player.jump();
+  }
+  
+}
+
 GAME.win = function (JumpSlide) {
   
 }
