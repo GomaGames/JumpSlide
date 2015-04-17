@@ -83,10 +83,16 @@ GAME.loop = function (JumpSlide) {
       JumpSlide.game_win();
     }
   });
+
+  // check if player falls, then lose game
+  if( JumpSlide.player.position.y >= JumpSlide.SETTINGS.ipad_dimensions.height ){
+    JumpSlide.game_lose();
+  }
+
 }
 
 GAME.win = function (JumpSlide) {
-  alert("you win");
+  
 }
 
 GAME.lose = function (JumpSlide) {

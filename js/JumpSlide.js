@@ -40,6 +40,9 @@ JumpSlide.SETTINGS = { // default settings
   },
   debug : false
 };
+// convenience
+JumpSlide.SETTINGS.ipad_dimensions.width = JumpSlide.SETTINGS.ipad_dimensions[0];
+JumpSlide.SETTINGS.ipad_dimensions.height = JumpSlide.SETTINGS.ipad_dimensions[1];
 
 // doesn't work great on ios
 JumpSlide.sfx = {
@@ -96,8 +99,8 @@ JumpSlide.addGoal = function ( x, y ) {
 
 JumpSlide.createSprite = function ( path, x, y ) {
   // default to middle of screen
-  x = x || JumpSlide.SETTINGS.ipad_dimensions[0]/2;
-  y = y || JumpSlide.SETTINGS.ipad_dimensions[1]/2;
+  x = x || JumpSlide.SETTINGS.ipad_dimensions.width/2;
+  y = y || JumpSlide.SETTINGS.ipad_dimensions.height/2;
 
   // get cached texture if exists
   var texture = null;
@@ -164,9 +167,7 @@ JumpSlide.forEachCoin = function( cb ){
   JumpSlide.coins.forEach(function (coin, i) {
     
     if( JumpSlide.player.running ){
-
       cb( coin );
-
     }
 
   });
@@ -178,7 +179,6 @@ JumpSlide.forEachPlatform = function( cb ) {
   JumpSlide.platforms.forEach(function (platform) {
     
     if( JumpSlide.player.running ){
-      
       if(!JumpSlide.player.check_x_collision(platform)){
         cb(platform);
       }
@@ -404,15 +404,9 @@ JumpSlide.game_win = null;
 
     if( GAME_STATE == GAME_STATES.playing ){
       
-      if( JumpSlide.player.position.y >= JumpSlide.SETTINGS.ipad_dimensions[1] ){
-        
-        JumpSlide.game_lose();
+      JumpSlide.player.stageX += JumpSlide.SETTINGS.run_speed;
 
-      }else{
-
-        JumpSlide.player.stageX += JumpSlide.SETTINGS.run_speed;
-        
-      }
+      GAME.loop( JumpSlide );
 
     } // end GAME_SATES.playing
 
@@ -422,15 +416,14 @@ JumpSlide.game_win = null;
     
     // render the stage   
     renderer.render( JumpSlide.stage );
-
-    GAME.loop( JumpSlide );
+    
   }
 
   function show_endgame_ui () {
     var overlay = JumpSlide.createSprite("assets/end_overlay.png");
     JumpSlide.score_board = new PIXI.Text(JumpSlide.score, {font:"bold 70px Arial", fill:"#3E4044"});
-    JumpSlide.score_board.x = JumpSlide.SETTINGS.ipad_dimensions[0]/2 - JumpSlide.score_board.width/2 ;
-    JumpSlide.score_board.y = JumpSlide.SETTINGS.ipad_dimensions[1]/2;
+    JumpSlide.score_board.x = JumpSlide.SETTINGS.ipad_dimensions.width/2 - JumpSlide.score_board.width/2 ;
+    JumpSlide.score_board.y = JumpSlide.SETTINGS.ipad_dimensions.height/2;
     JumpSlide.stage.addChild( JumpSlide.score_board );
   }
 
