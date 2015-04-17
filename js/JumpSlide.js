@@ -193,10 +193,7 @@ JumpSlide.forEachGoal = function( cb ) {
   JumpSlide.goals.forEach(function (goal) {
     
     if( JumpSlide.player.running ){
-      
-      if(!JumpSlide.player.check_x_collision(goal)){
-        cb(goal);
-      }
+      cb(goal);
     }
 
   });
