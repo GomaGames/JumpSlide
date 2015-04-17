@@ -44,10 +44,18 @@ GAME.init = function (JumpSlide) {
   JumpSlide.addGoal(2845, 650);
 
   JumpSlide.start();
+
 }
 
 GAME.loop = function (JumpSlide) {
   
+  JumpSlide.forEachCoin(function(coin) {
+    if(JumpSlide.player.check_collision(coin)){
+      JumpSlide.collectCoin(coin);
+      JumpSlide.sfx.coin.play();
+    }
+  });
+
 }
 
 GAME.win = function (JumpSlide) {

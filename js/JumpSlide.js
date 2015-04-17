@@ -151,8 +151,29 @@ JumpSlide.collectCoin = function ( coin ) {
   JumpSlide.score++;
   JumpSlide.score_board.setText( JumpSlide.score );
   this.removeSprite( coin );
-  JumpSlide.sfx.coin.play();
+  JumpSlide.coins.splice( JumpSlide.coins.indexOf(coin), 1 );
 }
+
+/**
+ * Loops over each coin, calls cb on each coin
+ *   moves the coin with the world
+ * @param  {Function} cb callback function from dev
+ */
+JumpSlide.forEachCoin = function( cb ){
+  
+  JumpSlide.coins.forEach(function (coin, i) {
+    
+    if( JumpSlide.player.running ){
+
+      coin.position.x -= JumpSlide.SETTINGS.run_speed;
+
+      cb( coin );
+
+    }
+
+  });
+
+};
 
 JumpSlide.game_lose = null;
 JumpSlide.game_win = null;
@@ -345,19 +366,12 @@ JumpSlide.game_win = null;
 
     });
 
+    /*
+    Moved to public api JumpSlide.forEachCoin
     JumpSlide.coins.forEach(function (coin, i) {
-      // movement
-      if( JumpSlide.player.running ){
-        // move the stage, not the JumpSlide.player
-        if(JumpSlide.player.check_collision(coin)){
-          JumpSlide.collectCoin(coin);
-          JumpSlide.coins.splice( i, 1 );
-        }else{
-          coin.position.x -= JumpSlide.SETTINGS.run_speed;
-        }
-      }
-
+      
     });
+    */
 
     JumpSlide.goals.forEach(function (goal) {
       // win condition
