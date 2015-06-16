@@ -111,8 +111,8 @@ JumpSlide.createSprite = function ( path, x, y ) {
   }
   
   var sprite = new PIXI.Sprite( texture );
-  sprite.anchor.x = 0.5;
-  sprite.anchor.y = 0.5;
+  sprite.anchor.x = 0;
+  sprite.anchor.y = 0;
   sprite.position.x = x;
   sprite.position.y = y;
 
