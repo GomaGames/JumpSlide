@@ -97,10 +97,6 @@ JumpSlide.addGoal = function ( x, y ) {
 };
 
 JumpSlide.createSprite = function ( path, x, y ) {
-  // default to middle of screen
-  x = x || JumpSlide.SETTINGS.ipad_dimensions.width/2;
-  y = y || JumpSlide.SETTINGS.ipad_dimensions.height/2;
-
   // get cached texture if exists
   var texture = null;
   if( JumpSlide.texture_cache.hasOwnProperty(path) ){
@@ -111,10 +107,19 @@ JumpSlide.createSprite = function ( path, x, y ) {
   }
   
   var sprite = new PIXI.Sprite( texture );
-  sprite.anchor.x = 0;
-  sprite.anchor.y = 0;
-  sprite.position.x = x;
-  sprite.position.y = y;
+  // no x and y coordinates centers the registration point
+  if( x !== undefined && y !== undefined ){
+    sprite.anchor.x = 0;
+    sprite.anchor.y = 0;
+  }else{
+    sprite.anchor.x = 0.5;
+    sprite.anchor.y = 0.5;
+  }
+  
+
+  // default to middle of screen
+  sprite.position.x = x || JumpSlide.SETTINGS.ipad_dimensions.width/2;
+  sprite.position.y = y || JumpSlide.SETTINGS.ipad_dimensions.height/2;
 
   JumpSlide.stage.addChild( sprite );
   
@@ -266,11 +271,11 @@ JumpSlide.game_win = null;
   // ui
   var bg = JumpSlide.createSprite( JumpSlide.SETTINGS.bg_image );
   JumpSlide.score_board = new PIXI.Text(JumpSlide.score, {font:"bold 50px Arial", fill:"#FDE48B"});
-  JumpSlide.score_board.x = 960;
+  JumpSlide.score_board.x = 105;
   JumpSlide.score_board.y = 20;
   JumpSlide.stage.addChild( JumpSlide.score_board );
-  var coin_symbol = JumpSlide.createSprite( JumpSlide.SETTINGS.coin_graphic, 890, 50 );
-  var score_times_symbol = JumpSlide.createSprite("assets/times.png", 936, 50 );
+  var coin_symbol = JumpSlide.createSprite( JumpSlide.SETTINGS.coin_graphic, 12, 24 );
+  var score_times_symbol = JumpSlide.createSprite("assets/times.png", 70, 37 );
   
 
   // start screen
