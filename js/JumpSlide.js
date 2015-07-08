@@ -6,9 +6,15 @@
  * GAME object calls JumpSlide.start()
  * 
  */
+localStorage.coins;
+console.log(localStorage.coins);
 
+localStorage.counter = "0";
+ 
 JumpSlide = {};
 
+
+  
 /**
  * Public Properties
  */
@@ -40,6 +46,8 @@ JumpSlide.SETTINGS = { // default settings
   debug : false // set to true to show bounding box
 };
 // convenience
+
+
 JumpSlide.SETTINGS.ipad_dimensions.width = JumpSlide.SETTINGS.ipad_dimensions[0];
 JumpSlide.SETTINGS.ipad_dimensions.height = JumpSlide.SETTINGS.ipad_dimensions[1];
 
@@ -61,6 +69,28 @@ JumpSlide.texture_cache = {};
 JumpSlide.score = 0;
 JumpSlide.score_board = null;
 
+window.addEventListener('keydown', function (e) {
+  switch(e.keyCode){
+    case 13: // enter
+      JumpSlide.stage.tap({originalEvent : { clientX : 0, clientY : 900} });
+      break;
+    case 38: // up
+    case 32: // space
+      GAME.tap({x: 0, y: 0});
+      break;
+    case 40: // down
+      GAME.touch_start({x: 0, y: 900});
+      break;
+  }
+});
+
+window.addEventListener('keyup', function (e) {
+  switch(e.keyCode){
+    case 40: // down
+      GAME.touch_end({x: 0, y: 900});
+      break;
+  }
+});
 /**
  * Public Methods
  */
@@ -155,6 +185,7 @@ JumpSlide.addCoin = function ( x, y ) {
 };
 
 JumpSlide.collectCoin = function ( coin ) {
+  localStorage.coins++;
   JumpSlide.score++;
   JumpSlide.score_board.setText( JumpSlide.score );
   this.removeSprite( coin );
@@ -419,12 +450,15 @@ JumpSlide.game_win = null;
 
   }
 
+
+
   function show_endgame_ui () {
     var overlay = JumpSlide.createSprite("assets/end_overlay.png");
     JumpSlide.score_board = new PIXI.Text(JumpSlide.score, {font:"bold 70px Arial", fill:"#3E4044"});
     JumpSlide.score_board.x = JumpSlide.SETTINGS.ipad_dimensions.width/2 - JumpSlide.score_board.width/2 ;
     JumpSlide.score_board.y = JumpSlide.SETTINGS.ipad_dimensions.height/2;
     JumpSlide.stage.addChild( JumpSlide.score_board );
+
   }
 
   JumpSlide.game_win = function() {
@@ -448,6 +482,9 @@ JumpSlide.game_win = null;
     GAME.lose( JumpSlide );
 
     JumpSlide.sfx.death.play();
+
+    // alert('You Lose! Total Score: '+ localStorage.coins);
+    
   }
 
 })();
@@ -457,8 +494,6 @@ JumpSlide.game_win = null;
  */
 
 GAME.init(JumpSlide);
-
-
 /**
  * PIXI Sprite extensions
  */
